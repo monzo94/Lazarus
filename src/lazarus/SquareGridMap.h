@@ -17,6 +17,8 @@ struct Position2D
 
     bool operator==(const Position2D& other);
 
+    bool operator<(const Position2D& other);
+
     int x, y;
 };
 
