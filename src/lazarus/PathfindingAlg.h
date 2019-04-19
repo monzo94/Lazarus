@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <map>
 #include <queue>
 #include <set>
@@ -59,6 +60,9 @@ public:
         // Clear caches of paths and costs
         previous.clear();
         costToNode.clear();
+
+        // Clear old path
+        path.clear();
         
         // Add origin node to the open list, with default values
         openList.emplace(0.0f, _origin);
@@ -67,6 +71,11 @@ public:
         state = SearchState::SEARCHING;
         while (state == SearchState::SEARCHING)
             state = searchStep();
+
+        // If search was successful, construct the found path
+        if (state == SearchState::SUCCESS)
+            constructPath();
+
         return state;
     }
 
@@ -77,13 +86,26 @@ public:
         return path;
     }
 
-
 protected:
     virtual SearchState searchStep() = 0;
 
+private:
+    void constructPath()
+    {
+        // Path starts from the next step after the origin,
+        // and finishes at the goal
+        Position current = _goal;
+        while (!(current == _origin))
+        {
+            path.push_back(current);
+            current = previous[current];
+        }
+        std::reverse(path.begin(), path.end());
+    }
+
 protected:
     Map& map;
-    SearchState state = SearchState::NOT_INITIALIZED;
+    SearchState state;
     Position& _origin;
     Position& _goal;
     std::vector<Position> path;
