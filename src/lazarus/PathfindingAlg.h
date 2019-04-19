@@ -1,5 +1,6 @@
 #pragma once
 
+#include <map>
 #include <queue>
 #include <set>
 #include <vector>
@@ -10,24 +11,7 @@
 namespace __lz  // Meant for internal use only
 {
 template <typename Position>
-struct Node
-{
-    Node(const Position& pos)
-        : position(pos)
-        , g(0.0f)
-        , h(0.0f)
-        , f(0.0f)
-    {
-    }
-
-    Position& position;
-    float g;  // g-score
-    float h;  // h-score or heuristic
-    float f;  // f-score
-};
-
-template <typename Position>
-using QueuePair = std::pair<float, Node<Position>>;
+using QueuePair = std::pair<float, Position>;
 }  // namespace __lz
 
 namespace lz
@@ -44,9 +28,11 @@ template <typename Position, typename Map>
 class PathfindingAlg
 {
 public:
-    PathfindingAlg(const Position &origin,
+    PathfindingAlg(const Map &map,
+                   const Position &origin,
                    const Position &goal,
                    Heuristic<Position> heuristic = manhattanDistance)
+        : map(map)
     {
         init(origin, goal, heuristic);
     }
@@ -69,6 +55,13 @@ public:
         closedList.clear();
         while (!openList.empty())
             openList.pop();
+
+        // Clear caches of paths and costs
+        previous.clear();
+        costToNode.clear();
+        
+        // Add origin node to the open list, with default values
+        openList.emplace(0.0f, _origin);
         
         // Run search algorithm until we either succeed or fail
         state = SearchState::SEARCHING;
@@ -89,13 +82,17 @@ protected:
     virtual SearchState searchStep() = 0;
 
 protected:
+    Map& map;
     SearchState state = SearchState::NOT_INITIALIZED;
     Position& _origin;
     Position& _goal;
     std::vector<Position> path;
     Heuristic<Position> _heuristic;
+    std::map<Position, Position> previous;
+    std::map<Position, float> costToNode;
     std::set<Position> closedList;
-    std::priority_queue<__lz::QueuePair, std::vector<__lz::QueuePair>,
-                        std::greater<__lz::QueuePair>> openList;
+    std::priority_queue<__lz::QueuePair<Position>,
+                        std::vector<__lz::QueuePair<Position>>,
+                        std::greater<__lz::QueuePair<Position>>> openList;
 };
 }  // namespace lz
