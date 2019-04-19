@@ -34,8 +34,11 @@ public:
                    const Position &goal,
                    Heuristic<Position> heuristic = manhattanDistance)
         : map(map)
+        , _origin(origin)
+        , _goal(goal)
+        , _heuristic(heuristic)
+        , state(SearchState::READY)
     {
-        init(origin, goal, heuristic);
     }
 
     virtual void init(const Position &origin,
@@ -98,16 +101,16 @@ private:
         while (!(current == _origin))
         {
             path.push_back(current);
-            current = previous[current];
+            current = previous.at(current);
         }
         std::reverse(path.begin(), path.end());
     }
 
 protected:
-    Map& map;
+    const Map& map;
     SearchState state;
-    Position& _origin;
-    Position& _goal;
+    Position _origin;
+    Position _goal;
     std::vector<Position> path;
     Heuristic<Position> _heuristic;
     std::map<Position, Position> previous;

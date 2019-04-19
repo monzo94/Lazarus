@@ -13,11 +13,16 @@ namespace lz
  */
 struct Position2D
 {
+    /**
+     * Construct a position from the given coordinates.
+     */
     Position2D(int x, int y);
 
-    bool operator==(const Position2D& other);
+    bool operator==(const Position2D& other) const;
 
-    bool operator<(const Position2D& other);
+    bool operator!=(const Position2D& other) const;
+
+    bool operator<(const Position2D& other) const;
 
     int x, y;
 };

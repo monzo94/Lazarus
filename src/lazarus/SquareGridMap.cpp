@@ -20,12 +20,17 @@ Position2D::Position2D(int x, int y)
 {
 }
 
-bool Position2D::operator==(const Position2D& other)
+bool Position2D::operator==(const Position2D& other) const
 {
     return x == other.x && y == other.y;
 }
 
-bool Position2D::operator<(const Position2D& other)
+bool Position2D::operator!=(const Position2D& other) const
+{
+    return !(*this == other);
+}
+
+bool Position2D::operator<(const Position2D& other) const
 {
     if (y == other.y)
         return x < other.x;

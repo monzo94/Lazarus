@@ -29,6 +29,7 @@ protected:
 
         // Pop next node in the open list
         Position node = this->openList.top().second;
+        this->openList.pop();
 
         // If we reached the goal node, we can finish
         // TODO: Document: Position needs operator== and operator<
@@ -40,7 +41,7 @@ protected:
 
         // Expand neighbours
         // TODO: Document: Map needs neighbours and getCost
-        for (auto neighbour : this->map.neighbours(node))
+        for (Position neighbour : this->map.neighbours(node))
         {
             float cost = this->costToNode[node] + this->map.getCost(neighbour);
             // Also consider visited nodes which would have a
@@ -49,6 +50,7 @@ protected:
                 || cost < this->costToNode[neighbour])
             {
                 this->costToNode[neighbour] = cost;
+                this->previous.insert(std::pair<Position, Position>(neighbour, node));
                 // Compute score as f = g + h
                 float f = cost + this->_heuristic(node, neighbour);
                 this->openList.emplace(f, neighbour);
