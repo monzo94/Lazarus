@@ -4,10 +4,33 @@
 
 namespace lz
 {
+/**
+ * Implementation of the A* pathfinding algorithm.
+ * 
+ * The A* algorithm uses a heuristic to speed up the search of an optimal path between
+ * any two given nodes.
+ * 
+ * The algorithm will only produce optimal paths (that is, minimal distance paths)
+ * reliably if the heuristic never overestimates the actual distance of an optimal path
+ * from any node to the goal node.
+ * 
+ * @tparam Position The type of position. Must implement the operators `==`, `!=` and `<`.
+ * @tparam Map THe type of map that the algorithm will use. Must implement the methods
+ * `getCost(const Position&)` and `neighbours(const Position&)`.
+ */
 template <typename Position, typename Map>
 class AStarSearch : public PathfindingAlg<Position, Map>
 {
 public:
+    /**
+     * Initializes a new A* search algorithm with the given data.
+     * 
+     * @param map Reference to the map with which the algorithm will work.
+     * @param origin Reference to the origin node.
+     * @param goal Reference to the goal node.
+     * @param heuristic Heuristic for the algorithm to use. By default, it
+     * uses the Manhattan distance.
+     */
     AStarSearch(const Map &map,
                 const Position &origin,
                 const Position &goal,
@@ -17,6 +40,11 @@ public:
     }
 
 protected:
+    /**
+     * Perform a search step of the A* algorithm.
+     * 
+     * @return The search state after the execution of the search step.
+     */
     virtual SearchState searchStep()
     {
         if (this->openList.empty())
