@@ -20,6 +20,11 @@ Position2D::Position2D(int x, int y)
 {
 }
 
+bool Position2D::operator==(const Position2D& other)
+{
+    return x == other.x && y == other.y;
+}
+
 SquareGridMap::SquareGridMap(unsigned width, unsigned height, bool diagonals)
     : diagonals(diagonals)
     , width(width)

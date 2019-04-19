@@ -14,6 +14,9 @@ namespace lz
 struct Position2D
 {
     Position2D(int x, int y);
+
+    bool operator==(const Position2D& other);
+
     int x, y;
 };
 
