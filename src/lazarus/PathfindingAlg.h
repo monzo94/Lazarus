@@ -9,7 +9,6 @@ namespace lz
 {
 enum class SearchState
 {
-    NOT_INITIALIZED,
     READY,
     SEARCHING,
     SUCCESS,
@@ -20,7 +19,22 @@ template <typename Position, typename Map>
 class PathfindingAlg
 {
 public:
-    virtual void init(const Position& origin, const Position& goal, Heuristic heuristic=manhattanDistance) = 0;
+    PathfindingAlg(const Position &origin,
+                   const Position &goal,
+                   Heuristic<Position> heuristic = manhattanDistance)
+    {
+        init(origin, goal, heuristic);
+    }
+
+    virtual void init(const Position &origin,
+                      const Position &goal,
+                      Heuristic<Position> heuristic = manhattanDistance)
+    {
+        _origin = origin;
+        _goal = goal;
+        _heuristic = heuristic;
+        state = SearchState::READY;
+    }
 
     SearchState getState() const { return state; }
 
@@ -35,7 +49,12 @@ public:
         return state;
     }
 
-    virtual std::vector<Position> getPath() const { return path; }
+    virtual std::vector<Position> getPath() const
+    {
+        if (state != SearchState::SUCCESS)
+            throw __lz::LazarusException("Trying to get path from failed pathfinding.");
+        return path;
+    }
 
 
 protected:
@@ -43,9 +62,9 @@ protected:
 
 protected:
     SearchState state = SearchState::NOT_INITIALIZED;
-    Position& origin;
-    Position& goal;
+    Position& _origin;
+    Position& _goal;
     std::vector<Position> path;
-    Heuristic heuristic;
+    Heuristic<Position> _heuristic;
 };
-}
+}  // namespace lz

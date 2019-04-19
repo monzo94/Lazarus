@@ -6,8 +6,8 @@
 
 namespace lz
 {
-template <typename Cell>
-using Heuristic = std::function<float(const Cell&, const Cell&)>;
+template <typename Position>
+using Heuristic = std::function<float(const Position&, const Position&)>;
 
 /**
  * Compute the Manhattan distance between two 2D positions.
