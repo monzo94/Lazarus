@@ -1,9 +1,14 @@
 #pragma once
 
+#include <functional>
+
 #include <lazarus/SquareGridMap.h>
 
 namespace lz
 {
+template <typename Position>
+using Heuristic = std::function<float(const Position&, const Position&)>;
+
 /**
  * Compute the Manhattan distance between two 2D positions.
  */
