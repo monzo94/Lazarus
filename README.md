@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/tonzo-studios/Lazarus.svg?branch=master)](https://travis-ci.org/tonzo-studios/Lazarus)
+[![Build Status](https://travis-ci.org/monzo94/Lazarus.svg?branch=master)](https://travis-ci.org/monzo94/Lazarus)
 
 # Lazarus
 Engine for creating roguelikes in C++
