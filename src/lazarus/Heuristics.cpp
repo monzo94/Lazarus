@@ -11,9 +11,9 @@ float lz::manhattanDistance(const Position2D& a, const Position2D& b)
 
 float lz::euclideanDistance(const Position2D& a, const Position2D& b)
 {
-    int dx = a.x - b.x,
-        dy = a.y - b.y;
-    return std::sqrt(dx * dx + dy * dy);
+    int dx = a.x - b.x;
+    int dy = a.y - b.y;
+    return std::hypot(dx, dy);
 }
 
 float lz::chebyshevDistance(const Position2D& a, const Position2D& b)
