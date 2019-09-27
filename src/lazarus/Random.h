@@ -96,7 +96,7 @@ public:
      * Rolls a dice with the specified number of sides a certain number of times
      * and returns the total result.
      */
-    static ulong roll(unsigned sides=6, unsigned times=1);
+    static unsigned long roll(unsigned sides=6, unsigned times=1);
 
     /**
      * Return true with a 1 in n probability.

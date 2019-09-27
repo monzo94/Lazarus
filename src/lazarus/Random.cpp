@@ -29,14 +29,14 @@ void Random::seed(unsigned seed)
     generator.seed(seed);
 }
 
-ulong Random::roll(unsigned sides, unsigned times)
+unsigned long Random::roll(unsigned sides, unsigned times)
 {
     if (sides == 1)
         return times;
     if (sides == 0 || times == 0)
         return 0;
     std::uniform_int_distribution<unsigned> dist(1, sides);
-    ulong total = 0;
+    unsigned long total = 0;
     for (unsigned t = 0; t < times; ++t)
         total += dist(generator);
     return total;
