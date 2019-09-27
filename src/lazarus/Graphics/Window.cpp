@@ -7,9 +7,11 @@ Window::Window(int width, int height)
     : width(width)
     , height(height)
 {
-    // TODO: hardcoded for testing; make parametrizable
-    tileset.load("/home/dani/Documents/Lazarus/res/dejavu12x12.png", 12);
-    unsigned tileSize = tileset.getTileSize();
+}
+
+void Window::loadTileset(const std::string &path, unsigned tileSize)
+{
+    tileset.load(path, tileSize);
     window.create(sf::VideoMode(tileSize * width, tileSize * height), "Lazarus");
 }
 
@@ -17,6 +19,9 @@ void Window::render()
 {
     window.clear(sf::Color::Black);
     unsigned tileSize = tileset.getTileSize();
+    if (tileSize == 0)
+        return;  // No tileset loaded
+
     // Draw all the tiles
     for (int y = 0; y < height; ++y)
     {

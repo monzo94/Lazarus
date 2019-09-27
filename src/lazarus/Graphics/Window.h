@@ -10,6 +10,8 @@ public:
     // TODO: Layering/subwindow system
     Window(int width, int height);
 
+    void loadTileset(const std::string &path, unsigned tileSize);
+
     void render();
 
     void renderLoop();
