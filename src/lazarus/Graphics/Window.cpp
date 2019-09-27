@@ -1,4 +1,5 @@
 #include <lazarus/Graphics/Window.h>
+#include <lazarus/Random.h>
 
 using namespace lz;
 
@@ -7,22 +8,26 @@ Window::Window(int width, int height)
     , height(height)
 {
     // TODO: hardcoded for testing; make parametrizable
-    window.create(sf::VideoMode(12 * width, 12 * height), "Lazarus");
     tileset.load("/home/dani/Documents/Lazarus/res/dejavu12x12.png", 12);
+    unsigned tileSize = tileset.getTileSize();
+    window.create(sf::VideoMode(tileSize * width, tileSize * height), "Lazarus");
 }
 
 void Window::render()
 {
     window.clear(sf::Color::Black);
+    unsigned tileSize = tileset.getTileSize();
+    // Draw all the tiles
     for (int y = 0; y < height; ++y)
     {
         for (int x = 0; x < width; ++x)
         {
-            // TODO: for now only printing first sprite in the tileset
-            int id = 1;
+            // TODO: for now print a random  sprite in the tileset
+            std::vector<int> indices(tileset.getNumTiles());
+            std::iota(indices.begin(), indices.end(), 0);
+            int id = Random::choice(indices);
             sf::Sprite &sprite = tileset.getTile(id);
-            // TODO: Use tile size
-            sprite.setPosition(x * 12, y * 12);
+            sprite.setPosition(x * tileSize, y * tileSize);
             window.draw(sprite);
         }
     }

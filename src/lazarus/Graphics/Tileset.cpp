@@ -6,6 +6,7 @@ using namespace lz;
 
 Tileset::Tileset()
     : tileSize(0)
+    , numTiles(0)
 {
 }
 
@@ -14,9 +15,19 @@ Tileset::Tileset(const std::string &path, const unsigned size)
     load(path, size);
 }
 
-bool Tileset::isLoaded()
+bool Tileset::isLoaded() const
 {
     return !tiles.empty() && tileSize != 0;
+}
+
+unsigned Tileset::getTileSize() const
+{
+    return tileSize;
+}
+
+unsigned Tileset::getNumTiles() const
+{
+    return numTiles;
 }
 
 void Tileset::load(const std::string &path, const unsigned size)
@@ -34,7 +45,7 @@ void Tileset::load(const std::string &path, const unsigned size)
         throw __lz::LazarusException("The tilemap has wrong dimensions: " + path);
 
     // Clear the old tileset and load the new one
-    const int numTiles = imageSize.x * imageSize.y / (size * size);
+    numTiles = imageSize.x * imageSize.y / (size * size);
     tiles.clear();
     // Assign an id to each tile in reading order
     for (int id = 0; id < numTiles; ++id)
