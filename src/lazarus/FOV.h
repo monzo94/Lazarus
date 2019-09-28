@@ -41,3 +41,17 @@ bool LOS(const Position2D &origin,
 std::set<Position2D> simpleFov(const Position2D &origin, const int &range,
                                const SquareGridMap &map);
 }  // namespace lz
+
+namespace __lz
+{
+// Adds all the combinations of positions from the origin with the given
+// offsets to the set of positions
+void addOctants(const lz::Position2D &origin,
+                const int &x,
+                const int &y,
+                std::set<lz::Position2D> &points);
+
+// Return the circles on the circle at the given radius.
+std::set<lz::Position2D> circle2D(const lz::Position2D &origin,
+                                  const int &radius);
+}

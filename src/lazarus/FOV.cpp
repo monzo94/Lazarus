@@ -9,7 +9,7 @@ std::vector<Position2D> lz::castRay(const Position2D &origin,
                                     const SquareGridMap *map,
                                     bool cancellable)
 {
-    // Use Bresenham's algorithm to cast ray
+    // Use modified Bresenham's algorithm to cast ray
     std::vector<Position2D> points;
     int x0 = origin.x, y0 = origin.y, x1 = dest.x, y1 = dest.y;
 
@@ -44,6 +44,10 @@ std::vector<Position2D> lz::castRay(const Position2D &origin,
         error -= dy;
         if (error < 0)
         {
+            // TODO: when line "breaks", check if we've crossed a diagonal of
+            // non-transparent tiles, in which case it can be parametrized not
+            // to continue the cast and consider the next tile non-transparent,
+            // even if it is
             y += ystep;
             error += dx;
         }
@@ -71,19 +75,53 @@ std::set<Position2D> lz::simpleFov(const Position2D &origin, const int &range,
     // Cast rays in all directions given by a square with the set range
     // TODO: Use a "circle" instead of a square so that the range in the
     // diagonals is not larger
-    for (int i = -range; i < range; ++i)
+    std::set<Position2D> circle = __lz::circle2D(origin, range);
+    for (auto pos : circle)
     {
-        std::vector<Position2D> vertices{Position2D(origin.x + i, origin.y - range),
-                                         Position2D(origin.x + i, origin.y + range),
-                                         Position2D(origin.x - range, origin.y + i),
-                                         Position2D(origin.x + range, origin.y + i)};
-        for (auto pos : vertices)
-        {
-            auto ray = castRay(origin, pos, &map, true);
-            std::copy(ray.begin(), ray.end(),
-                      std::inserter(visible, visible.begin()));
-        }
+        auto ray = castRay(origin, pos, &map, true);
+        std::copy(ray.begin(), ray.end(),
+                  std::inserter(visible, visible.begin()));
     }
 
     return visible;
+}
+
+void __lz::addOctants(const Position2D &origin,
+                      const int &x,
+                      const int &y,
+                      std::set<Position2D> &points)
+{
+    int xc = origin.x, yc = origin.y;
+    points.insert(Position2D(xc + x, yc + y));
+    points.insert(Position2D(xc - x, yc + y));
+    points.insert(Position2D(xc + x, yc - y));
+    points.insert(Position2D(xc - x, yc - y));
+    points.insert(Position2D(xc + y, yc + x));
+    points.insert(Position2D(xc - y, yc + x));
+    points.insert(Position2D(xc + y, yc - x));
+    points.insert(Position2D(xc - y, yc - x));
+}
+
+std::set<Position2D> __lz::circle2D(const Position2D &origin,
+                                       const int &radius)
+{
+    // Find circle positions for one octant and replicate to all other
+    // octants using a modification of Bresenham's algorithm
+    std::set<Position2D> circle;
+    int x = 0, y = radius;
+    int d = 3 - 2 * radius;
+    addOctants(origin, x, y, circle);
+    while (y >= x)
+    {
+        x++;
+        if (d > 0)
+        {
+            y--;
+            d += + 4 * (x - y) + 10;
+        }
+        else
+            d += + 4 * x + 6;
+        addOctants(origin, x, y, circle);
+    }
+    return circle;
 }
