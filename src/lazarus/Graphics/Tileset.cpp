@@ -7,6 +7,8 @@ using namespace lz;
 Tileset::Tileset()
     : tileSize(0)
     , numTiles(0)
+    , textureWidth(0)
+    , textureHeight(0)
 {
 }
 
@@ -41,17 +43,19 @@ void Tileset::load(const std::string &path, const unsigned size)
     // Tileset's width and height has to be divisible by the tile size
     // TODO: Allow non-square sizes
     sf::Vector2u imageSize = texture.getSize();
-    if (imageSize.x % size || imageSize.y % size)
+    textureWidth = imageSize.x;
+    textureHeight = imageSize.y;
+    if (textureWidth % size || textureHeight % size)
         throw __lz::LazarusException("The tilemap has wrong dimensions: " + path);
 
     // Clear the old tileset and load the new one
-    numTiles = imageSize.x * imageSize.y / (size * size);
+    numTiles = textureWidth * textureHeight / (size * size);
     tiles.clear();
     // Assign an id to each tile in reading order
     for (int id = 0; id < numTiles; ++id)
     {
-        int col = id % (imageSize.x / size);
-        int row = id / (imageSize.x / size);
+        int col = id % (textureWidth / size);
+        int row = id / (textureWidth / size);
 
         sf::IntRect spriteRect(col * size, row * size, size, size);
         tiles.emplace_back(texture, spriteRect);
