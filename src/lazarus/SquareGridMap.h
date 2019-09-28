@@ -52,6 +52,9 @@ public:
     /**
      * Constructor for the map.
      * 
+     * By default, all tiles will be set to not walkable
+     * and not transparent.
+     * 
      * @param width Maximum width of the map.
      * @param height Maximum height of the map.
      * @param diagonals Whether or not to consider diagonals as adjacent tiles.
