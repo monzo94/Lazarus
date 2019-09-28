@@ -58,7 +58,11 @@ void Tileset::load(const std::string &path, const unsigned size)
     }
 }
 
-sf::Sprite& Tileset::getTile(int id)
-{    
-    return tiles[id];
+sf::Sprite &Tileset::getTile(int id)
+{
+    if (!isLoaded())
+        throw __lz::LazarusException("No tileset loaded");
+    if (id >= 0 && id < tiles.size())
+        return tiles[id];
+    return tiles[0];  // Return first tile as placeholder
 }

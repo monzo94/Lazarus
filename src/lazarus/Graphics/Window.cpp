@@ -3,9 +3,10 @@
 
 using namespace lz;
 
-Window::Window(int width, int height)
+Window::Window(int width, int height, Color bgColor/*=Color::Black*/)
     : width(width)
     , height(height)
+    , bgColor(bgColor)
 {
 }
 
@@ -17,7 +18,7 @@ void Window::loadTileset(const std::string &path, unsigned tileSize)
 
 void Window::render()
 {
-    window.clear(sf::Color::Black);
+    window.clear(bgColor);
     unsigned tileSize = tileset.getTileSize();
     if (tileSize == 0)
         return;  // No tileset loaded

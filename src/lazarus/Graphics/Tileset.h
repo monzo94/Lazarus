@@ -16,7 +16,7 @@ public:
     unsigned getTileSize() const;
     unsigned getNumTiles() const;
 
-    sf::Sprite& getTile(int id);
+    sf::Sprite &getTile(int id);
 
 private:
     // Currently loaded texture
@@ -24,7 +24,7 @@ private:
 
     // Width and height per tile of the currently loaded texture
     unsigned tileSize;
-    
+
     // Number of tiles in the tileset
     unsigned numTiles;
 
