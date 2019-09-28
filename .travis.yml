@@ -19,6 +19,9 @@ addons:
       - libfreetype6-dev
       - libvorbis-dev
       - libflac-dev
+      - libglu1-mesa-dev
+      - freeglut3-dev
+      - mesa-common-dev
     sources: &sources
       - llvm-toolchain-precise-3.8
       - ubuntu-toolchain-r-test
