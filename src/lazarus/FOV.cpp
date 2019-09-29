@@ -7,6 +7,7 @@ using namespace lz;
 std::vector<Position2D> lz::cast_ray(const Position2D &origin,
                                      const Position2D &dest,
                                      const SquareGridMap *map,
+                                     int max_dist,
                                      bool cancellable)
 {
     // Use modified Bresenham's algorithm to cast ray
@@ -39,7 +40,8 @@ std::vector<Position2D> lz::cast_ray(const Position2D &origin,
 
         // TODO: pass an entity engine and check if there's a light blocking entity
         // in the current position too
-        if (cancellable && !transparent)
+        // If the ray got to a blocking tile or the maximum distance was reached, stop
+        if ((cancellable && !transparent) || (max_dist > 0 && points.size() >= max_dist))
             break;
 
         error -= dy;
@@ -78,13 +80,16 @@ std::set<Position2D> lz::simple_fov(const Position2D &origin, const int &range,
     // to get a 'sphere' FOV
     for (int i = -range; i <= range; ++i)
     {
+        // Shorten diagonals proportionally to make a "circle" FOV
+        double slope_factor = 1. + ((std::sqrt(2) - 1.) * std::abs(i)) / range;
+        int max_cast_dist = std::ceil(range / slope_factor);
         std::vector<Position2D> vertices{Position2D(origin.x + i, origin.y - range),
                                          Position2D(origin.x + i, origin.y + range),
                                          Position2D(origin.x - range, origin.y + i),
                                          Position2D(origin.x + range, origin.y + i)};
         for (auto pos : vertices)
         {
-            auto ray = cast_ray(origin, pos, &map, true);
+            auto ray = cast_ray(origin, pos, &map, max_cast_dist, true);
             std::copy(ray.begin(), ray.end(),
                       std::inserter(visible, visible.begin()));
         }

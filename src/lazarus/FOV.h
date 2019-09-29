@@ -1,6 +1,7 @@
 #pragma once
 
 #include <set>
+#include <cmath>
 #include "SquareGridMap.h"
 
 namespace lz
@@ -18,6 +19,8 @@ namespace lz
  * map is specified, all positions in a line from origin to dest
  * will be returned. If a map is specified, only the positions which
  * are transparent will be added.
+ * @param max_dist Maximum number of tiles the ray will travel before stopping.
+ * If set to -1, the ray travels until reaching the destination.
  * @param cancellable If set to true and a map is specified, the
  * algorithm will stop when the first non-transparent position is
  * encountered.
@@ -25,6 +28,7 @@ namespace lz
 std::vector<Position2D> cast_ray(const Position2D &origin,
                                  const Position2D &dest,
                                  const SquareGridMap *map = nullptr,
+                                 int max_dist = -1,
                                  bool cancellable = true);
 
 /**
