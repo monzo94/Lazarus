@@ -4,10 +4,10 @@
 
 using namespace lz;
 
-std::vector<Position2D> lz::castRay(const Position2D &origin,
-                                    const Position2D &dest,
-                                    const SquareGridMap *map,
-                                    bool cancellable)
+std::vector<Position2D> lz::cast_ray(const Position2D &origin,
+                                     const Position2D &dest,
+                                     const SquareGridMap *map,
+                                     bool cancellable)
 {
     // Use modified Bresenham's algorithm to cast ray
     std::vector<Position2D> points;
@@ -33,7 +33,7 @@ std::vector<Position2D> lz::castRay(const Position2D &origin,
     for (int x = x0; x != x1 + xstep; x += xstep)
     {
         Position2D pos{isSteep ? y : x, isSteep ? x : y};
-        bool transparent = !map || map->isTransparent(pos);
+        bool transparent = !map || map->is_transparent(pos);
 
         if (transparent)
             points.emplace_back(isSteep ? y : x, isSteep ? x : y);
@@ -56,17 +56,17 @@ std::vector<Position2D> lz::castRay(const Position2D &origin,
     return points;
 }
 
-bool lz::LOS(const Position2D &origin,
+bool lz::los(const Position2D &origin,
              const Position2D &dest,
              const SquareGridMap &map)
 {
     // Cast a ray and check if it got to the destination
-    auto ray = castRay(origin, dest, &map, true);
+    auto ray = cast_ray(origin, dest, &map, true);
     return ray.back() == dest;
 }
 
-std::set<Position2D> lz::simpleFov(const Position2D &origin, const int &range,
-                                   const SquareGridMap &map)
+std::set<Position2D> lz::simple_fov(const Position2D &origin, const int &range,
+                                    const SquareGridMap &map)
 {
     std::set<Position2D> visible;
     // Origin is always visible
@@ -78,7 +78,7 @@ std::set<Position2D> lz::simpleFov(const Position2D &origin, const int &range,
     std::set<Position2D> circle = __lz::circle2D(origin, range);
     for (auto pos : circle)
     {
-        auto ray = castRay(origin, pos, &map, true);
+        auto ray = cast_ray(origin, pos, &map, true);
         std::copy(ray.begin(), ray.end(),
                   std::inserter(visible, visible.begin()));
     }
@@ -86,10 +86,10 @@ std::set<Position2D> lz::simpleFov(const Position2D &origin, const int &range,
     return visible;
 }
 
-void __lz::addOctants(const Position2D &origin,
-                      const int &x,
-                      const int &y,
-                      std::set<Position2D> &points)
+void __lz::add_octants(const Position2D &origin,
+                       const int &x,
+                       const int &y,
+                       std::set<Position2D> &points)
 {
     int xc = origin.x, yc = origin.y;
     points.insert(Position2D(xc + x, yc + y));
@@ -110,7 +110,7 @@ std::set<Position2D> __lz::circle2D(const Position2D &origin,
     std::set<Position2D> circle;
     int x = 0, y = radius;
     int d = 3 - 2 * radius;
-    addOctants(origin, x, y, circle);
+    add_octants(origin, x, y, circle);
     while (y >= x)
     {
         x++;
@@ -121,7 +121,7 @@ std::set<Position2D> __lz::circle2D(const Position2D &origin,
         }
         else
             d += + 4 * x + 6;
-        addOctants(origin, x, y, circle);
+        add_octants(origin, x, y, circle);
     }
     return circle;
 }

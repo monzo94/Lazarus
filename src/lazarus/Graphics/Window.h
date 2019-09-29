@@ -10,13 +10,13 @@ class Window
 {
 public:
     // TODO: Layering/subwindow system
-    Window(int width, int height, Color bgColor = Color::Black);
+    Window(int width, int height, Color bg_color = Color::Black);
 
-    void loadTileset(const std::string &path, unsigned tileSize);
+    void load_tileset(const std::string &path, unsigned tile_size);
 
     void render();
 
-    void renderLoop();
+    void render_loop();
 
 private:
     // Dimensions in tiles of the window
@@ -27,6 +27,6 @@ private:
     Tileset tileset;
     // Tile ID to print at each position on render
     std::vector<int> buffer;
-    Color bgColor;
+    Color bg_color;
 };
 }  // namespace lz

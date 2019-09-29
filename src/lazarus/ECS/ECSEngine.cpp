@@ -2,29 +2,29 @@
 
 using namespace lz;
 
-Entity* ECSEngine::addEntity()
+Entity* ECSEngine::add_entity()
 {
     Entity entity;
-    std::shared_ptr<Entity> entPtr = std::make_shared<Entity>(entity);
-    entities[entity.getId()] = entPtr;
-    return entPtr.get();
+    std::shared_ptr<Entity> ent_ptr = std::make_shared<Entity>(entity);
+    entities[entity.get_id()] = ent_ptr;
+    return ent_ptr.get();
 }
 
-void ECSEngine::addEntity(Entity& entity)
+void ECSEngine::add_entity(Entity& entity)
 {
     // TODO: Log the case when entity already exists in the map
-    entities[entity.getId()] = std::make_shared<Entity>(entity);
+    entities[entity.get_id()] = std::make_shared<Entity>(entity);
 }
 
-Entity* ECSEngine::getEntity(Identifier entityId)
+Entity* ECSEngine::get_entity(Identifier entity_id)
 {
-    auto found = entities.find(entityId);
+    auto found = entities.find(entity_id);
     if (found == entities.end())
         return nullptr;
     return found->second.get();
 }
 
-void ECSEngine::registerUpdateable(Updateable* updateable)
+void ECSEngine::register_updateable(Updateable* updateable)
 {
     updateables.push_back(updateable);
 }
@@ -38,16 +38,16 @@ void ECSEngine::update()
     }
 
     // Run garbage collector
-    garbageCollect();
+    garbage_collect();
 }
 
-void ECSEngine::garbageCollect()
+void ECSEngine::garbage_collect()
 {
     auto it = entities.begin();
     while (it != entities.end())
     {
         Entity* entity = it->second.get();
-        if (entity->isDeleted())
+        if (entity->is_deleted())
             it = entities.erase(it);
         else
             ++it;

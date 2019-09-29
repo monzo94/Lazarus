@@ -42,7 +42,7 @@ unsigned long Random::roll(unsigned sides, unsigned times)
     return total;
 }
 
-bool Random::oneIn(unsigned n)
+bool Random::one_in(unsigned n)
 {
     if (n < 2)
         return true;

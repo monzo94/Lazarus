@@ -101,7 +101,7 @@ public:
     /**
      * Return true with a 1 in n probability.
      */
-    static bool oneIn(unsigned n);
+    static bool one_in(unsigned n);
 
     /**
      * Return a random number generated from a normal distribution.

@@ -3,24 +3,24 @@
 
 using namespace lz;
 
-Window::Window(int width, int height, Color bgColor/*=Color::Black*/)
+Window::Window(int width, int height, Color bg_color/*=Color::Black*/)
     : width(width)
     , height(height)
-    , bgColor(bgColor)
+    , bg_color(bg_color)
 {
 }
 
-void Window::loadTileset(const std::string &path, unsigned tileSize)
+void Window::load_tileset(const std::string &path, unsigned tile_size)
 {
-    tileset.load(path, tileSize);
-    window.create(sf::VideoMode(tileSize * width, tileSize * height), "Lazarus");
+    tileset.load(path, tile_size);
+    window.create(sf::VideoMode(tile_size * width, tile_size * height), "Lazarus");
 }
 
 void Window::render()
 {
-    window.clear(bgColor);
-    unsigned tileSize = tileset.getTileSize();
-    if (tileSize == 0)
+    window.clear(bg_color);
+    unsigned tile_size = tileset.get_tile_size();
+    if (tile_size == 0)
         return;  // No tileset loaded
 
     // Draw all the tiles
@@ -29,11 +29,11 @@ void Window::render()
         for (int x = 0; x < width; ++x)
         {
             // TODO: for now print a random  sprite in the tileset
-            std::vector<int> indices(tileset.getNumTiles());
+            std::vector<int> indices(tileset.get_num_tiles());
             std::iota(indices.begin(), indices.end(), 0);
             int id = Random::choice(indices);
-            sf::Sprite &sprite = tileset.getTile(id);
-            sprite.setPosition(x * tileSize, y * tileSize);
+            sf::Sprite &sprite = tileset.get_tile(id);
+            sprite.setPosition(x * tile_size, y * tile_size);
             window.draw(sprite);
         }
     }
@@ -41,7 +41,7 @@ void Window::render()
 }
 
 // TODO: delete main loop from here, it is only for testing
-void Window::renderLoop()
+void Window::render_loop()
 {
     while (window.isOpen())
     {

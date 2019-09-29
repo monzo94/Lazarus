@@ -22,15 +22,15 @@ namespace lz
  * algorithm will stop when the first non-transparent position is
  * encountered.
  */
-std::vector<Position2D> castRay(const Position2D &origin,
-                                const Position2D &dest,
-                                const SquareGridMap *map = nullptr,
-                                bool cancellable = true);
+std::vector<Position2D> cast_ray(const Position2D &origin,
+                                 const Position2D &dest,
+                                 const SquareGridMap *map = nullptr,
+                                 bool cancellable = true);
 
 /**
  * Return whether origin has LOS of dest in the given map.
  */
-bool LOS(const Position2D &origin,
+bool los(const Position2D &origin,
          const Position2D &dest,
          const SquareGridMap &map);
 
@@ -38,18 +38,18 @@ bool LOS(const Position2D &origin,
  * Return a vector of the positions that are visible from the origin at a given range
  * in the map.
  */
-std::set<Position2D> simpleFov(const Position2D &origin, const int &range,
-                               const SquareGridMap &map);
+std::set<Position2D> simple_fov(const Position2D &origin, const int &range,
+                                const SquareGridMap &map);
 }  // namespace lz
 
 namespace __lz
 {
 // Adds all the combinations of positions from the origin with the given
 // offsets to the set of positions
-void addOctants(const lz::Position2D &origin,
-                const int &x,
-                const int &y,
-                std::set<lz::Position2D> &points);
+void add_octants(const lz::Position2D &origin,
+                 const int &x,
+                 const int &y,
+                 std::set<lz::Position2D> &points);
 
 // Return the circles on the circle at the given radius.
 std::set<lz::Position2D> circle2D(const lz::Position2D &origin,

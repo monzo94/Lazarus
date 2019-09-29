@@ -11,7 +11,7 @@
 namespace __lz  // Meant for internal use only
 {
 template <typename T>
-std::type_index getTypeIndex()
+std::type_index get_type_index()
 {
     return std::type_index(typeid(T));
 }
@@ -60,7 +60,7 @@ public:
     /**
      * Returns the ID of the entity.
      */
-    Identifier getId() const { return entityId; }
+    Identifier get_id() const { return entity_id; }
 
     /**
      * Returns whether the entity has a component of type T.
@@ -85,7 +85,7 @@ public:
      * will be thrown.
      */
     template <typename Component, typename... Args>
-    void addComponent(Args&&... args);
+    void add_component(Args&&... args);
 
     /**
      * Removes the component of type T from the entity.
@@ -94,7 +94,7 @@ public:
      * is thrown.
      */
     template <typename Component>
-    void removeComponent();
+    void remove_component();
 
     /**
      * Returns a pointer to the entity's component of the specified type.
@@ -108,7 +108,7 @@ public:
      * Returns whether this entity is marked for deletion upon the next pass of
      * the garbage collector.
      */
-    bool isDeleted() const { return deleted; }
+    bool is_deleted() const { return deleted; }
 
     /**
      * Marks the entity for deletion.
@@ -116,7 +116,7 @@ public:
      * An entity marked for deletion will be cleared from memory on the next pass of the
      * ECS engine garbage collector.
      */
-    void markForDeletion() { deleted = true; }
+    void mark_for_deletion() { deleted = true; }
 
     /**
      * Returns true if the IDs of the entities are the same.
@@ -134,8 +134,8 @@ public:
     bool operator<(const Entity& other);
 
 private:
-    const Identifier entityId;
-    static Identifier entityCount;  // Keep track of the number of entities to assign new IDs
+    const Identifier entity_id;
+    static Identifier entity_count;  // Keep track of the number of entities to assign new IDs
     std::unordered_map<std::type_index, std::shared_ptr<__lz::BaseComponentHandle>> components;
     bool deleted = false;
 };
@@ -143,7 +143,7 @@ private:
 template <typename Component>
 bool Entity::has() const
 {
-    return components.find(__lz::getTypeIndex<Component>()) != components.end();
+    return components.find(__lz::get_type_index<Component>()) != components.end();
 }
 
 template <typename T, typename V, typename... Types>
@@ -153,13 +153,13 @@ bool Entity::has() const
 }
 
 template <typename Component, typename... Args>
-void Entity::addComponent(Args&&... args)
+void Entity::add_component(Args&&... args)
 {
     // Check if the entity already holds a component T
     if (has<Component>())
     {
         std::stringstream msg;
-        msg << "Entity " << getId() << " already holds a component of type "
+        msg << "Entity " << get_id() << " already holds a component of type "
             << typeid(Component).name();
         throw __lz::LazarusException(msg.str());
     }
@@ -168,30 +168,30 @@ void Entity::addComponent(Args&&... args)
     std::shared_ptr<__lz::BaseComponentHandle> handle(
         new __lz::ComponentHandle<Component>(std::make_shared<Component>(args...))
     );
-    components[__lz::getTypeIndex<Component>()] = std::move(handle);
+    components[__lz::get_type_index<Component>()] = std::move(handle);
 }
 
 template <typename Component>
-void Entity::removeComponent()
+void Entity::remove_component()
 {
     if (!has<Component>())
     {
         std::stringstream msg;
-        msg << "Entity " << getId() << " does not have a component of type "
+        msg << "Entity " << get_id() << " does not have a component of type "
             << typeid(Component).name();
         throw __lz::LazarusException(msg.str());
     }
 
-    components.erase(__lz::getTypeIndex<Component>());
+    components.erase(__lz::get_type_index<Component>());
 }
 
 template <typename Component>
 Component* Entity::get()
 {
-    auto found = components.find(__lz::getTypeIndex<Component>());
+    auto found = components.find(__lz::get_type_index<Component>());
     if (found == components.end())
         return nullptr;  // TODO: Log this case
-    auto compHandle = dynamic_cast<__lz::ComponentHandle<Component>*>(found->second.get());
-    return compHandle->get();
+    auto comp_handle = dynamic_cast<__lz::ComponentHandle<Component>*>(found->second.get());
+    return comp_handle->get();
 }
 }  // namespace lz

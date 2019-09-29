@@ -64,12 +64,12 @@ public:
     /**
      * @return The width of the map.
      */
-    unsigned getWidth() const;
+    unsigned get_width() const;
     
     /**
      * @return The height of the map.
      */
-    unsigned getHeight() const;
+    unsigned get_height() const;
 
     /**
      * Returns whether the tile at the given position is walkable.
@@ -79,20 +79,20 @@ public:
      * @return `true` if the tile at the given position is walkable, `false` if it is
      * not walkable or if the position is out of the boundaries of the map.
      * 
-     * @see isWalkable(int, int) const
+     * @see is_walkable(int, int) const
      */
-    bool isWalkable(const Position2D& pos) const;
+    bool is_walkable(const Position2D& pos) const;
 
     /**
-     * Overloaded version of @ref isWalkable(const Position2D&) const
+     * Overloaded version of @ref is_walkable(const Position2D&) const
      * which takes the coordinates of the position as arguments.
      * 
      * @param x The x coordinate of a 2D position.
      * @param y The y coordinate of a 2D position.
      * 
-     * @see isWalkable(const Position2D&) const
+     * @see is_walkable(const Position2D&) const
      */
-    bool isWalkable(int x, int y) const;
+    bool is_walkable(int x, int y) const;
 
     /**
      * Returns whether the tile at the given position is transparent.
@@ -102,20 +102,20 @@ public:
      * @return `true` if the tile at the given position is transparent, `false` if it is
      * not transparent or if the position is out of the boundaries of the map.
      * 
-     * @see isTransparent(int, int) const
+     * @see is_transparent(int, int) const
      */
-    bool isTransparent(const Position2D& pos) const;
+    bool is_transparent(const Position2D& pos) const;
 
     /**
-     * Overloaded version of @ref isTransparent(const Position2D&) const
+     * Overloaded version of @ref is_transparent(const Position2D&) const
      * which takes the coordinates of the position as arguments.
      * 
      * @param x The x coordinate of a 2D position.
      * @param y The y coordinate of a 2D position.
      * 
-     * @see isTransparent(const Position2D&) const
+     * @see is_transparent(const Position2D&) const
      */
-    bool isTransparent(int x, int y) const;
+    bool is_transparent(int x, int y) const;
 
     /**
      * Returns whether the given position is within the boundaries of the map.
@@ -125,20 +125,20 @@ public:
      * @return `true` if the tile is within the boundaries of the map, that is,
      * `0 <= x < width` and `0 <= y < height`, and `false` otherwise.
      * 
-     * @see isOutOfBounds(int, int) const
+     * @see is_out_of_bounds(int, int) const
      */
-    bool isOutOfBounds(const Position2D& pos) const;
+    bool is_out_of_bounds(const Position2D& pos) const;
 
     /**
-     * Overloaded version of @ref isOutOfBounds(const Position2D&) const
+     * Overloaded version of @ref is_out_of_bounds(const Position2D&) const
      * which takes the coordinates of the position as arguments.
      * 
      * @param x The x coordinate of a 2D position.
      * @param y The y coordinate of a 2D position.
      * 
-     * @see isOutOfBounds(const Position2D&) const
+     * @see is_out_of_bounds(const Position2D&) const
      */
-    bool isOutOfBounds(int x, int y) const;
+    bool is_out_of_bounds(int x, int y) const;
 
     /**
      * Gets the cost of the tile at the given position.
@@ -150,20 +150,20 @@ public:
      * 
      * @return The cost of accessing the tile from an adjacent tile.
      * 
-     * @see getCost(int, int) const
+     * @see get_cost(int, int) const
      */
-    float getCost(const Position2D& pos) const;
+    float get_cost(const Position2D& pos) const;
 
     /**
-     * Overloaded version of @ref getCost(const Position2D&) const
+     * Overloaded version of @ref get_cost(const Position2D&) const
      * which takes the coordinates of the position as arguments.
      * 
      * @param x The x coordinate of a 2D position.
      * @param y The y coordinate of a 2D position.
      * 
-     * @see getCost(const Position2D&) const
+     * @see get_cost(const Position2D&) const
      */
-    float getCost(int x, int y) const;
+    float get_cost(int x, int y) const;
 
     /**
      * Sets the cost of the tile at the given position.
@@ -173,27 +173,27 @@ public:
      * 
      * @throws LazarusException If the position is outside of the boundaries of the map.
      * 
-     * @see setCost(int, int, float);
+     * @see set_cost(int, int, float);
      */
-    void setCost(const Position2D& pos, float cost);
+    void set_cost(const Position2D& pos, float cost);
 
     /**
-     * Overloaded version of @ref setCost(const Position2D& pos, float cost) const
+     * Overloaded version of @ref set_cost(const Position2D& pos, float cost) const
      * which takes the coordinates of the position as arguments.
      * 
      * @param x The x coordinate of a 2D position.
      * @param y The y coordinate of a 2D position.
      * 
-     * @see setCost(const Position2D& pos, float cost) const
+     * @see set_cost(const Position2D& pos, float cost) const
      */
-    void setCost(int x, int y, float cost);
+    void set_cost(int x, int y, float cost);
 
     /**
      * Changes the walkability of the tile at the given position.
      * 
      * If the tile was already walkable, nothing changes. If the tile was unwalkable,
      * it will be made walkable with a default cost of 1.
-     * To make a tile walkable with a cost different than 1, the method setCost() can
+     * To make a tile walkable with a cost different than 1, the method set_cost() can
      * be used instead, as setting a cost greater than zero will make the tile walkable too.
      * 
      * @param pos A 2D position.
@@ -201,20 +201,20 @@ public:
      * 
      * @throws LazarusException If the position is outside of the boundaries of the map.
      * 
-     * @see setWalkable(int, int, bool);
+     * @see set_walkable(int, int, bool);
      */
-    void setWalkable(const Position2D& pos, bool walkable);
+    void set_walkable(const Position2D& pos, bool walkable);
 
     /**
-     * Overloaded version of @ref setWalkable(const Position2D& pos, bool walkable) const
+     * Overloaded version of @ref set_walkable(const Position2D& pos, bool walkable) const
      * which takes the coordinates of the position as arguments.
      * 
      * @param x The x coordinate of a 2D position.
      * @param y The y coordinate of a 2D position.
      * 
-     * @see setWalkable(const Position2D& pos, bool walkable) const
+     * @see set_walkable(const Position2D& pos, bool walkable) const
      */
-    void setWalkable(int x, int y, bool walkable);
+    void set_walkable(int x, int y, bool walkable);
 
     /**
      * Changes the transparency of the tile at the given position.
@@ -224,20 +224,20 @@ public:
      * 
      * @throws LazarusException If the position is outside of the boundaries of the map.
      * 
-     * @see setTransparency(int, int, bool)
+     * @see set_transparency(int, int, bool)
      */
-    void setTransparency(const Position2D& pos, bool transparent);
+    void set_transparency(const Position2D& pos, bool transparent);
 
     /**
-     * Overloaded version of @ref setTransparency(const Position2D& pos, bool transparent) const
+     * Overloaded version of @ref set_transparency(const Position2D& pos, bool transparent) const
      * which takes the coordinates of the position as arguments.
      * 
      * @param x The x coordinate of a 2D position.
      * @param y The y coordinate of a 2D position.
      * 
-     * @see setTransparency(const Position2D& pos, bool transparent) const
+     * @see set_transparency(const Position2D& pos, bool transparent) const
      */
-    void setTransparency(int x, int y, bool transparent);
+    void set_transparency(int x, int y, bool transparent);
 
     /**
      * Returns a vector with the walkable tiles adjacent to the tile at the given position.
@@ -274,13 +274,13 @@ public:
      * By default, the cost of the tiles in the room will all be set to 1, but it
      * can be changed to another value.
      * 
-     * @param topLeft Top-left position of the tile of the rectangular room.
-     * @param bottomRight Bottom-right position of the tile of the rectangular room.
+     * @param top_left Top-left position of the tile of the rectangular room.
+     * @param bottom_right Bottom-right position of the tile of the rectangular room.
      * @param cost Cost that will be given to all the tiles in the created room.
      */
-    void carveRoom(const Position2D& topLeft,
-                   const Position2D& bottomRight,
-                   float cost=1);
+    void carve_room(const Position2D &top_left,
+                    const Position2D &bottom_right,
+                    float cost = 1);
 
 private:
     bool diagonals = false;
@@ -292,5 +292,5 @@ private:
 
 namespace __lz  // Meant only for internal use
 {
-void throwOutOfBoundsException(const lz::Position2D& pos);
+void throw_out_of_bounds_exception(const lz::Position2D& pos);
 }  // namespace __lz

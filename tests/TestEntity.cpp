@@ -18,15 +18,15 @@ struct TestComponent
 // Another test component, with multiple constructor params
 struct SecondTestComponent
 {
-    SecondTestComponent(std::string string, int num, bool testBool)
+    SecondTestComponent(std::string string, int num, bool test_bool)
         : string(string)
         , num(num)
-        , testBool(testBool)
+        , test_bool(test_bool)
     {}
 
     std::string string;
     int num;
-    bool testBool;
+    bool test_bool;
 };
 
 // A test component with no data
@@ -37,12 +37,12 @@ struct EmptyComponent
 TEST_CASE("entity creation")
 {
     Entity entity;
-    Identifier id = entity.getId();
+    Identifier id = entity.get_id();
     SECTION("entity ids")
     {
-Entity another;
-        REQUIRE(entity.getId() == id);  // The original entity's ID hasn't changed
-        REQUIRE(another.getId() == id + 1);  // New entity gets new ID
+        Entity another;
+        REQUIRE(entity.get_id() == id);  // The original entity's ID hasn't changed
+        REQUIRE(another.get_id() == id + 1);  // New entity gets new ID
     }
     SECTION("entity has no components on creation")
     {
@@ -51,7 +51,7 @@ Entity another;
     }
     SECTION("entity not deleted on creation")
     {
-        REQUIRE_FALSE(entity.isDeleted());
+        REQUIRE_FALSE(entity.is_deleted());
     }
 }
 
@@ -60,11 +60,11 @@ TEST_CASE("adding components")
     Entity entity;
     SECTION("add one component with a single param to entity")
     {
-        REQUIRE_NOTHROW(entity.addComponent<TestComponent>(25));
+        REQUIRE_NOTHROW(entity.add_component<TestComponent>(25));
     }
     SECTION("add one component with multiple params to entity")
     {
-        REQUIRE_NOTHROW(entity.addComponent<SecondTestComponent>(
+        REQUIRE_NOTHROW(entity.add_component<SecondTestComponent>(
             "test",
             14,
             false
@@ -72,18 +72,18 @@ TEST_CASE("adding components")
     }
     SECTION("add an empty component")
     {
-        REQUIRE_NOTHROW(entity.addComponent<EmptyComponent>());
+        REQUIRE_NOTHROW(entity.add_component<EmptyComponent>());
     }
     // Note: No need to test the case in which we try to add a component
     // that's not derived from BaseComponent, as that would not even compile
-    // thanks to the static_assert in addComponent
+    // thanks to the static_assert in add_component
 }
 
 TEST_CASE("checking component existence in entities")
 {
     Entity entity;
-    entity.addComponent<TestComponent>(25);
-    entity.addComponent<SecondTestComponent>("test", 14, false);
+    entity.add_component<TestComponent>(25);
+    entity.add_component<SecondTestComponent>("test", 14, false);
     SECTION("check if entity has or not one component type")
     {
         REQUIRE(entity.has<TestComponent>());
@@ -100,7 +100,7 @@ TEST_CASE("checking component existence in entities")
 TEST_CASE("getting components from entities")
 {
     Entity entity;
-    entity.addComponent<SecondTestComponent>("test", -5, false);
+    entity.add_component<SecondTestComponent>("test", -5, false);
     SecondTestComponent *comp = entity.get<SecondTestComponent>();
     SECTION("getting existing component")
     {
@@ -124,22 +124,22 @@ TEST_CASE("getting components from entities")
 TEST_CASE("removing components from entities")
 {
     Entity entity;
-    entity.addComponent<TestComponent>(15);
+    entity.add_component<TestComponent>(15);
     SECTION("removing existing component")
     {
         REQUIRE(entity.has<TestComponent>());
-        REQUIRE_NOTHROW(entity.removeComponent<TestComponent>());
+        REQUIRE_NOTHROW(entity.remove_component<TestComponent>());
         REQUIRE_FALSE(entity.has<TestComponent>());
     }
     SECTION("removing non-existing component")
     {
-        REQUIRE_THROWS_AS(entity.removeComponent<SecondTestComponent>(),
+        REQUIRE_THROWS_AS(entity.remove_component<SecondTestComponent>(),
                           __lz::LazarusException);
     }
     SECTION("can add component of same type after removing")
     {
-        REQUIRE_NOTHROW(entity.removeComponent<TestComponent>());
-        REQUIRE_NOTHROW(entity.addComponent<TestComponent>(99));
+        REQUIRE_NOTHROW(entity.remove_component<TestComponent>());
+        REQUIRE_NOTHROW(entity.add_component<TestComponent>(99));
         REQUIRE(entity.has<TestComponent>());
     }
 }

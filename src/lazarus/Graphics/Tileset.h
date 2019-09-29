@@ -36,7 +36,7 @@ public:
     /**
      * Return whether a valid texture has been loaded.
      */
-    bool isLoaded() const;
+    bool is_loaded() const;
 
     /**
      * Return the size of each tile in pixels.
@@ -44,34 +44,34 @@ public:
      * Since tiles are square, the size is both the width and
      * the height of the tile.
      */
-    unsigned getTileSize() const;
+    unsigned get_tile_size() const;
 
     /**
      * Get the total number of tiles loaded from the texture.
      */
-    unsigned getNumTiles() const;
+    unsigned get_num_tiles() const;
 
     /**
      * Get a tile from its id, which is its position in the texture
      * in reading order.
      */
-    sf::Sprite &getTile(int id);
+    sf::Sprite &get_tile(int id);
 
     /**
      * Get a tile from its position (in tiles) in the texture.
      */
-    sf::Sprite &getTile(int x, int y);
+    sf::Sprite &get_tile(int x, int y);
 
 private:
     // Currently loaded texture
     sf::Texture texture;
-    unsigned textureWidth, textureHeight;
+    unsigned texture_width, texture_height;
 
     // Width and height per tile of the currently loaded texture
-    unsigned tileSize;
+    unsigned tile_size;
 
     // Number of tiles in the tileset
-    unsigned numTiles;
+    unsigned num_tiles;
 
     // Hold the tileset currently loaded by the engine
     std::vector<sf::Sprite> tiles;

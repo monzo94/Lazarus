@@ -16,7 +16,7 @@ namespace lz
  * 
  * @tparam Position The type of position. Must implement the operators `==`, `!=` and `<`.
  * @tparam Map THe type of map that the algorithm will use. Must implement the methods
- * `getCost(const Position&)` and `neighbours(const Position&)`.
+ * `get_cost(const Position&)` and `neighbours(const Position&)`.
  */
 template <typename Position, typename Map>
 class AStarSearch : public PathfindingAlg<Position, Map>
@@ -34,7 +34,7 @@ public:
     AStarSearch(const Map &map,
                 const Position &origin,
                 const Position &goal,
-                Heuristic<Position> heuristic = manhattanDistance)
+                Heuristic<Position> heuristic = manhattan_distance)
         : PathfindingAlg<Position, Map>(map, origin, goal, heuristic)
     {
     }
@@ -45,9 +45,9 @@ protected:
      * 
      * @return The search state after the execution of the search step.
      */
-    virtual SearchState searchStep()
+    virtual SearchState search_step()
     {
-        if (this->openList.empty())
+        if (this->open_list.empty())
         {
             // No more nodes in the open list, so the algorithm failed to
             // find a path
@@ -56,32 +56,32 @@ protected:
         }
 
         // Pop next node in the open list
-        Position node = this->openList.top().second;
-        this->openList.pop();
+        Position node = this->open_list.top().second;
+        this->open_list.pop();
 
         // If we reached the goal node, we can finish
         // TODO: Document: Position needs operator== and operator<
-        if (node == this->_goal)
+        if (node == this->goal)
         {
             this->state = SearchState::SUCCESS;
             return this->state;
         }
 
         // Expand neighbours
-        // TODO: Document: Map needs neighbours and getCost
+        // TODO: Document: Map needs neighbours and get_cost
         for (Position neighbour : this->map.neighbours(node))
         {
-            float cost = this->costToNode[node] + this->map.getCost(neighbour);
+            float cost = this->cost_to_node[node] + this->map.get_cost(neighbour);
             // Also consider visited nodes which would have a
             // smaller cost from this new path
             if (this->previous.find(neighbour) == this->previous.end()
-                || cost < this->costToNode[neighbour])
+                || cost < this->cost_to_node[neighbour])
             {
-                this->costToNode[neighbour] = cost;
+                this->cost_to_node[neighbour] = cost;
                 this->previous.insert(std::pair<Position, Position>(neighbour, node));
                 // Compute score as f = g + h
-                float f = cost + this->_heuristic(node, neighbour);
-                this->openList.emplace(f, neighbour);
+                float f = cost + this->heuristic(node, neighbour);
+                this->open_list.emplace(f, neighbour);
             }
         }
 

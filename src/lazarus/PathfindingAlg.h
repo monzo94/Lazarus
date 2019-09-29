@@ -51,11 +51,11 @@ public:
     PathfindingAlg(const Map &map,
                    const Position &origin,
                    const Position &goal,
-                   Heuristic<Position> heuristic = manhattanDistance)
+                   Heuristic<Position> heuristic = manhattan_distance)
         : map(map)
-        , _origin(origin)
-        , _goal(goal)
-        , _heuristic(heuristic)
+        , origin(origin)
+        , goal(goal)
+        , heuristic(heuristic)
         , state(SearchState::READY)
     {
     }
@@ -65,13 +65,13 @@ public:
      * 
      * Sets the origin and goal nodes, and optionally, the heuristic to use.
      */
-    virtual void init(const Position &origin,
-                      const Position &goal,
-                      Heuristic<Position> heuristic = manhattanDistance)
+    virtual void init(const Position &_origin,
+                      const Position &_goal,
+                      Heuristic<Position> _heuristic = manhattan_distance)
     {
-        _origin = origin;
-        _goal = goal;
-        _heuristic = heuristic;
+        origin = _origin;
+        goal = _goal;
+        heuristic = _heuristic;
         state = SearchState::READY;
     }
 
@@ -88,7 +88,7 @@ public:
      * or until the algorithm cannot continue because a path does not exist.
      * 
      * If the search was successful, the final path will be constructed using the
-     * @ref constructPath() method.
+     * @ref construct_path() method.
      * 
      * @return The search state after the execution of the algorithm. It can be either
      * `SearchState::SUCCESS` if a path was found, or `SearchState::FAILED`
@@ -100,28 +100,28 @@ public:
             throw __lz::LazarusException("Tried to execute an uninitialized pathfinding algorithm.");
 
         // Clear open and closed lists
-        closedList.clear();
-        while (!openList.empty())
-            openList.pop();
+        closed_list.clear();
+        while (!open_list.empty())
+            open_list.pop();
 
         // Clear caches of paths and costs
         previous.clear();
-        costToNode.clear();
+        cost_to_node.clear();
 
         // Clear old path
         path.clear();
         
         // Add origin node to the open list, with default values
-        openList.emplace(0.0f, _origin);
+        open_list.emplace(0.0f, origin);
         
         // Run search algorithm until we either succeed or fail
         state = SearchState::SEARCHING;
         while (state == SearchState::SEARCHING)
-            state = searchStep();
+            state = search_step();
 
         // If search was successful, construct the found path
         if (state == SearchState::SUCCESS)
-            constructPath();
+            construct_path();
 
         return state;
     }
@@ -137,7 +137,7 @@ public:
      */
     virtual SearchState execute(const Position& origin, const Position& goal)
     {
-        init(origin, goal, _heuristic);
+        init(origin, goal, heuristic);
         return execute();
     }
 
@@ -167,7 +167,7 @@ protected:
      * 
      * @return The search state after the execution of the search step.
      */
-    virtual SearchState searchStep() = 0;
+    virtual SearchState search_step() = 0;
 
 private:
     /**
@@ -178,15 +178,15 @@ private:
      * 
      * @throw LazarusException If the search has not finished successfully.
      */
-    void constructPath()
+    void construct_path()
     {
         if (state != SearchState::SUCCESS)
             throw __lz::LazarusException("Trying to get path from a failed pathfinding search.");
 
         // Path starts from the next step after the origin,
         // and finishes at the goal
-        Position current = _goal;
-        while (!(current == _origin))
+        Position current = goal;
+        while (!(current == origin))
         {
             path.push_back(current);
             current = previous.at(current);
@@ -197,15 +197,15 @@ private:
 protected:
     const Map& map;
     SearchState state;
-    Position _origin;
-    Position _goal;
+    Position origin;
+    Position goal;
     std::vector<Position> path;
-    Heuristic<Position> _heuristic;
+    Heuristic<Position> heuristic;
     std::map<Position, Position> previous;
-    std::map<Position, float> costToNode;
-    std::set<Position> closedList;
+    std::map<Position, float> cost_to_node;
+    std::set<Position> closed_list;
     std::priority_queue<__lz::QueuePair<Position>,
                         std::vector<__lz::QueuePair<Position>>,
-                        std::greater<__lz::QueuePair<Position>>> openList;
+                        std::greater<__lz::QueuePair<Position>>> open_list;
 };
 }  // namespace lz

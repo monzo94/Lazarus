@@ -32,33 +32,33 @@ TEST_CASE("int range generation", "[random]")
     }
 }
 
-TEST_CASE("oneIn test", "[random]")
+TEST_CASE("one_in test", "[random]")
 {
     Random::seed(TEST_SEED);
     SECTION("sequence with same probability")
-    { // With this seed, only the 6th roll of oneIn(10) returns true
+    { // With this seed, only the 6th roll of one_in(10) returns true
         for (int i = 0; i < 10; ++i)
         {
             if (i == 5)
-                REQUIRE(Random::oneIn(10));
+                REQUIRE(Random::one_in(10));
             else
-                REQUIRE(!Random::oneIn(10));
+                REQUIRE(!Random::one_in(10));
         }
     }
     SECTION("different probabilities")
     {
-        REQUIRE(!Random::oneIn(5));
+        REQUIRE(!Random::one_in(5));
         // -1 gets casted to a huge integer since the parameter is unsigned and should
         // therefore be false almost always
-        REQUIRE(!Random::oneIn(-1));
-        // oneIn(0) is true by definition
-        REQUIRE(Random::oneIn(0));
+        REQUIRE(!Random::one_in(-1));
+        // one_in(0) is true by definition
+        REQUIRE(Random::one_in(0));
     }
-    SECTION("oneIn(1) is always true")
+    SECTION("one_in(1) is always true")
     {
-        // oneIn(1) should be true always
+        // one_in(1) should be true always
         for (int i = 0; i < 15; ++i)
-            REQUIRE(Random::oneIn(1) == 1);
+            REQUIRE(Random::one_in(1) == 1);
     }
 }
 

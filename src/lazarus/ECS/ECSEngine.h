@@ -30,7 +30,7 @@ public:
     /**
      * Adds a new entity to the collection and returns a pointer to it.
      */
-    Entity* addEntity();
+    Entity* add_entity();
 
     /**
      * Adds an existing entity to the collection.
@@ -38,24 +38,24 @@ public:
      * If the entity already exists in the collection, that is, the ID of
      * the entity is found in the collection, it does nothing.
      */
-    void addEntity(Entity& entity);
+    void add_entity(Entity& entity);
 
     /**
      * Gets a pointer to the entity from the collection with the given
      * ID, or a nullptr if an entity with such ID does not exist in the
      * collection.
      */
-    Entity* getEntity(Identifier entityId);
+    Entity* get_entity(Identifier entity_id);
 
     /**
      * Returns a vector with the entities that have the specified
      * components.
      * 
-     * If includeDeleted is set to true, entities that are marked for
+     * If include_deleted is set to true, entities that are marked for
      * deletion will also be included.
      */
     template <typename... Types>
-    std::vector<Entity*> entitiesWithComponents(bool includeDeleted=false);
+    std::vector<Entity*> entities_with_components(bool include_deleted=false);
 
     /**
      * Applies a function to each of the entities from the collection that have the
@@ -64,13 +64,13 @@ public:
      * The function passed can be a reference to an existing function, a lambda,
      * or an std::function.
      * 
-     * If includeDeleted is set to true, the function will also be applied to
+     * If include_deleted is set to true, the function will also be applied to
      * entities that are marked for deletion.
      */
     template <typename... Types>
-    void applyToEach(
+    void apply_to_each(
         typename std::common_type<std::function<void(Entity*, Types*...)>>::type&& func,
-        bool includeDeleted=false);
+        bool include_deleted=false);
 
     /**
      * Subscribes the event listener to the list of listeners of that event type.
@@ -82,13 +82,13 @@ public:
      * @see EventListener
      */
     template <typename EventType>
-    void subscribe(EventListener<EventType>* eventListener);
+    void subscribe(EventListener<EventType>* event_listener);
 
     /**
      * Unsubscribes the event listener from the list of listeners of that event type.
      */
     template <typename EventType>
-    void unsubscribe(EventListener<EventType>* eventListener);
+    void unsubscribe(EventListener<EventType>* event_listener);
 
     /**
      * Emit an event to all listeners of that type of event.
@@ -101,7 +101,7 @@ public:
      * 
      * The update method on this object will be called when the engine is updated.
      */
-    void registerUpdateable(Updateable* updateable);
+    void register_updateable(Updateable* updateable);
 
     /**
      * Updates all the updateable objects in the engine.
@@ -114,7 +114,7 @@ private:
     /**
      * Removes deleted entities.
      */
-    void garbageCollect();
+    void garbage_collect();
 
 private:
     std::unordered_map<Identifier, std::shared_ptr<Entity>> entities;
@@ -125,27 +125,27 @@ private:
 };
 
 template <typename... Types>
-std::vector<Entity*> ECSEngine::entitiesWithComponents(bool includeDeleted)
+std::vector<Entity*> ECSEngine::entities_with_components(bool include_deleted)
 {
     std::vector<Entity*> result;
-    applyToEach<Types...>([&](Entity* ent, Types*... comp)
+    apply_to_each<Types...>([&](Entity* ent, Types*... comp)
     {
         result.push_back(ent);
     },
-    includeDeleted);
+    include_deleted);
     return result;
 }
 
 template <typename... Types>
-void ECSEngine::applyToEach(
+void ECSEngine::apply_to_each(
     typename std::common_type<std::function<void(Entity*, Types*...)>>::type&& func,
-    bool includeDeleted)
+    bool include_deleted)
 {
     for (auto it = entities.begin(); it != entities.end(); ++it)
     {
         Entity* entity = it->second.get();
 
-        if (!includeDeleted && entity->isDeleted())
+        if (!include_deleted && entity->is_deleted())
             continue;
 
         if (entity->has<Types...>())
@@ -154,37 +154,37 @@ void ECSEngine::applyToEach(
 }
 
 template <typename EventType>
-void ECSEngine::subscribe(EventListener<EventType>* eventListener)
+void ECSEngine::subscribe(EventListener<EventType>* event_listener)
 {
-    std::type_index typeId = __lz::getTypeIndex<EventType>();
+    std::type_index typeId = __lz::get_type_index<EventType>();
     auto found = subscribers.find(typeId);
     if (found == subscribers.end())
     {
         // No subscribers to this type of event yet, create vector
         std::vector<__lz::BaseEventListener*> vec;
-        vec.push_back(eventListener);
+        vec.push_back(event_listener);
         subscribers[typeId] = vec;
     }
     else
     {
         // There already exists a list of subscribers to this event type
-        found->second.push_back(eventListener);
+        found->second.push_back(event_listener);
     }
 }
 
 template <typename EventType>
-void ECSEngine::unsubscribe(EventListener<EventType>* eventListener)
+void ECSEngine::unsubscribe(EventListener<EventType>* event_listener)
 {
-    auto found = subscribers.find(__lz::getTypeIndex<EventType>());
+    auto found = subscribers.find(__lz::get_type_index<EventType>());
     if (found != subscribers.end())
     {
-        auto eventListeners = found->second;
-        for (auto it = eventListeners.begin(); it != eventListeners.end(); ++it)
+        auto event_listeners = found->second;
+        for (auto it = event_listeners.begin(); it != event_listeners.end(); ++it)
         {
-            if (*it == eventListener)
+            if (*it == event_listener)
             {
                 // System found, remove it from the subscriber list
-                eventListeners.erase(it);
+                event_listeners.erase(it);
                 return;
             }
         }
@@ -200,11 +200,11 @@ template <typename EventType>
 void ECSEngine::emit(const EventType& event)
 {
     // TODO: Log case in which an event is emitted but no listeners for that type exist
-    auto found = subscribers.find(__lz::getTypeIndex<EventType>());
+    auto found = subscribers.find(__lz::get_type_index<EventType>());
     if (found != subscribers.end())
     {
-        auto eventListeners = found->second;
-        for (auto it = eventListeners.begin(); it != eventListeners.end(); ++it)
+        auto event_listeners = found->second;
+        for (auto it = event_listeners.begin(); it != event_listeners.end(); ++it)
         {
             auto* listener = dynamic_cast<EventListener<EventType>*>(*it);
             listener->receive(*this, event);

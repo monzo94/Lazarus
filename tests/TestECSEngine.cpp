@@ -56,20 +56,20 @@ TEST_CASE("add entities to the engine")
     ECSEngine engine;
     SECTION("add new entity")
     {
-        Entity* entity = engine.addEntity();
+        Entity* entity = engine.add_entity();
         REQUIRE(entity != nullptr);
-        Identifier id = entity->getId();
-        Entity *other = engine.addEntity();
-        REQUIRE(other->getId() == id + 1);
+        Identifier id = entity->get_id();
+        Entity *other = engine.add_entity();
+        REQUIRE(other->get_id() == id + 1);
     }
     SECTION("add existing entity")
     {
         Entity entity;
-        Identifier id = entity.getId();
-        REQUIRE_NOTHROW(engine.addEntity(entity));
+        Identifier id = entity.get_id();
+        REQUIRE_NOTHROW(engine.add_entity(entity));
         // Add new empty entity
-        Entity* other = engine.addEntity();
-        REQUIRE(other->getId() == id + 1);
+        Entity* other = engine.add_entity();
+        REQUIRE(other->get_id() == id + 1);
     }
 }
 
@@ -77,18 +77,18 @@ TEST_CASE("get entity from identifier")
 {
     ECSEngine engine;
     Entity entity;
-    Identifier id = entity.getId();
-    engine.addEntity(entity);
+    Identifier id = entity.get_id();
+    engine.add_entity(entity);
     SECTION("get existing entity")
     {
-        Entity* entPtr = engine.getEntity(id);
-        REQUIRE(entPtr != nullptr);
-        REQUIRE(entPtr->getId() == id);
+        Entity* ent_ptr = engine.get_entity(id);
+        REQUIRE(ent_ptr != nullptr);
+        REQUIRE(ent_ptr->get_id() == id);
     }
     SECTION("get non-existing entity")
     {
-        Entity* entPtr = engine.getEntity(1512);
-        REQUIRE(entPtr == nullptr);
+        Entity* ent_ptr = engine.get_entity(1512);
+        REQUIRE(ent_ptr == nullptr);
     }
 }
 
@@ -96,67 +96,67 @@ TEST_CASE("entity management")
 {
     ECSEngine engine;
     // Add one entity with TestComponent and TestComponent2
-    Entity *entity = engine.addEntity();
-    Identifier id1 = entity->getId();
-    entity->addComponent<TestComponent>(0);
-    entity->addComponent<TestComponent2>(0);
+    Entity *entity = engine.add_entity();
+    Identifier id1 = entity->get_id();
+    entity->add_component<TestComponent>(0);
+    entity->add_component<TestComponent2>(0);
     // Add another entity, only with TestComponent
-    entity = engine.addEntity();
-    Identifier id2 = entity->getId();
-    entity->addComponent<TestComponent>(0);
+    entity = engine.add_entity();
+    Identifier id2 = entity->get_id();
+    entity->add_component<TestComponent>(0);
 
-    SECTION("entitiesWithComponents")
+    SECTION("entities_with_components")
     {
         // Both entities have TestComponent
-        auto entities = engine.entitiesWithComponents<TestComponent>();
+        auto entities = engine.entities_with_components<TestComponent>();
         REQUIRE(entities.size() == 2);
 
         // Only entity 1 has TestComponent2
-        entities = engine.entitiesWithComponents<TestComponent2>();
+        entities = engine.entities_with_components<TestComponent2>();
         REQUIRE(entities.size() == 1);
-        REQUIRE(entities[0]->getId() == id1);
+        REQUIRE(entities[0]->get_id() == id1);
 
         // Only entity 1 has both components
-        entities = engine.entitiesWithComponents<TestComponent,
+        entities = engine.entities_with_components<TestComponent,
                                                  TestComponent2>();
         REQUIRE(entities.size() == 1);
-        REQUIRE(entities[0]->getId() == id1);
+        REQUIRE(entities[0]->get_id() == id1);
     }
-    SECTION("applyToEach with lambda")
+    SECTION("apply_to_each with lambda")
     {
         // Check that components have constructed values
-        TestComponent* comp = engine.getEntity(id1)->get<TestComponent>();
+        TestComponent* comp = engine.get_entity(id1)->get<TestComponent>();
         REQUIRE(comp->num == 0);
-        comp = engine.getEntity(id2)->get<TestComponent>();
+        comp = engine.get_entity(id2)->get<TestComponent>();
         REQUIRE(comp->num == 0);
 
         // Update TestComponent on all entities that have it
-        engine.applyToEach<TestComponent>([](Entity* ent, TestComponent* comp)
+        engine.apply_to_each<TestComponent>([](Entity* ent, TestComponent* comp)
         {
             comp->num++;
         });
 
         // Check that it was modified for both entities
-        comp = engine.getEntity(id1)->get<TestComponent>();
+        comp = engine.get_entity(id1)->get<TestComponent>();
         REQUIRE(comp->num == 1);
-        comp = engine.getEntity(id2)->get<TestComponent>();
+        comp = engine.get_entity(id2)->get<TestComponent>();
         REQUIRE(comp->num == 1);
     }
-    SECTION("applyToEach with std::function")
+    SECTION("apply_to_each with std::function")
     {
         // Check that components have constructed values
-        TestComponent* comp = engine.getEntity(id1)->get<TestComponent>();
+        TestComponent* comp = engine.get_entity(id1)->get<TestComponent>();
         REQUIRE(comp->num == 0);
-        comp = engine.getEntity(id2)->get<TestComponent>();
+        comp = engine.get_entity(id2)->get<TestComponent>();
         REQUIRE(comp->num == 0);
 
         // Update TestComponent on all entities that have it
-        engine.applyToEach<TestComponent>(addNumBy10);
+        engine.apply_to_each<TestComponent>(addNumBy10);
 
         // Check that it was modified for both entities
-        comp = engine.getEntity(id1)->get<TestComponent>();
+        comp = engine.get_entity(id1)->get<TestComponent>();
         REQUIRE(comp->num == 10);
-        comp = engine.getEntity(id2)->get<TestComponent>();
+        comp = engine.get_entity(id2)->get<TestComponent>();
         REQUIRE(comp->num == 10);
     }
 }
@@ -209,7 +209,7 @@ TEST_CASE("updateable management")
     SECTION("update with subscribers")
     {
         REQUIRE(system.x == 0);
-        engine.registerUpdateable(&system);
+        engine.register_updateable(&system);
         engine.update();
         REQUIRE(system.x == 1);
     }
@@ -218,17 +218,17 @@ TEST_CASE("updateable management")
 TEST_CASE("garbage collector")
 {
     ECSEngine engine;
-    Entity *entity = engine.addEntity();
-    Identifier id = entity->getId();
-    REQUIRE_FALSE(entity->isDeleted());
-    REQUIRE(engine.getEntity(id) != nullptr);
+    Entity *entity = engine.add_entity();
+    Identifier id = entity->get_id();
+    REQUIRE_FALSE(entity->is_deleted());
+    REQUIRE(engine.get_entity(id) != nullptr);
     
     // Mark for deletion
-    entity->markForDeletion();
-    REQUIRE(engine.getEntity(id) != nullptr);
-    REQUIRE(entity->isDeleted());
+    entity->mark_for_deletion();
+    REQUIRE(engine.get_entity(id) != nullptr);
+    REQUIRE(entity->is_deleted());
     
     // Garbage collect
     engine.update();
-    REQUIRE(engine.getEntity(id) == nullptr);
+    REQUIRE(engine.get_entity(id) == nullptr);
 }

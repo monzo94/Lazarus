@@ -2,16 +2,16 @@
 
 using namespace lz;
 
-Identifier Entity::entityCount = 0;
+Identifier Entity::entity_count = 0;
 
 Entity::Entity()
-    : entityId(++entityCount)
+    : entity_id(++entity_count)
 {
 }
 
 bool Entity::operator==(const Entity& other)
 {
-    return getId() == other.getId();
+    return get_id() == other.get_id();
 }
 
 bool Entity::operator!=(const Entity& other)
@@ -21,5 +21,5 @@ bool Entity::operator!=(const Entity& other)
 
 bool Entity::operator<(const Entity& other)
 {
-    return getId() < other.getId();
+    return get_id() < other.get_id();
 }

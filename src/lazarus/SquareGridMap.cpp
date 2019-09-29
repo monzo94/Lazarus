@@ -7,7 +7,7 @@
 
 using namespace lz;
 
-void __lz::throwOutOfBoundsException(const Position2D& pos)
+void __lz::throw_out_of_bounds_exception(const Position2D &pos)
 {
     std::stringstream msg;
     msg << "Position (" << pos.x << ", " << pos.y << ") is out of bounds.";
@@ -20,17 +20,17 @@ Position2D::Position2D(int x, int y)
 {
 }
 
-bool Position2D::operator==(const Position2D& other) const
+bool Position2D::operator==(const Position2D &other) const
 {
     return x == other.x && y == other.y;
 }
 
-bool Position2D::operator!=(const Position2D& other) const
+bool Position2D::operator!=(const Position2D &other) const
 {
     return !(*this == other);
 }
 
-bool Position2D::operator<(const Position2D& other) const
+bool Position2D::operator<(const Position2D &other) const
 {
     if (y == other.y)
         return x < other.x;
@@ -48,58 +48,59 @@ SquareGridMap::SquareGridMap(unsigned width, unsigned height, bool diagonals)
         throw __lz::LazarusException("SquareGridMap width and height must be positive.");
 }
 
-unsigned SquareGridMap::getWidth() const
+unsigned SquareGridMap::get_width() const
 {
     return width;
 }
 
-unsigned SquareGridMap::getHeight() const
+unsigned SquareGridMap::get_height() const
 {
     return height;
 }
 
-bool SquareGridMap::isWalkable(const Position2D& pos) const
+bool SquareGridMap::is_walkable(const Position2D &pos) const
 {
-    if (isOutOfBounds(pos))
+    if (is_out_of_bounds(pos))
         return false;  // TODO: Log this case
     return costs[pos.y * width + pos.x] >= 0.;
 }
 
-bool SquareGridMap::isWalkable(int x, int y) const
+bool SquareGridMap::is_walkable(int x, int y) const
 {
-    return isWalkable(Position2D(x, y));
+    return is_walkable(Position2D(x, y));
 }
 
-bool SquareGridMap::isTransparent(const Position2D& pos) const
+bool SquareGridMap::is_transparent(const Position2D &pos) const
 {
-    if (isOutOfBounds(pos))
+    if (is_out_of_bounds(pos))
         return false;  // TODO: Log this case
     return transparencies[pos.y * width + pos.x];
 }
 
-bool SquareGridMap::isTransparent(int x, int y) const
+bool SquareGridMap::is_transparent(int x, int y) const
 {
-    return isTransparent(Position2D(x, y));
+    return is_transparent(Position2D(x, y));
 }
 
-bool SquareGridMap::isOutOfBounds(const Position2D& pos) const
+bool SquareGridMap::is_out_of_bounds(const Position2D &pos) const
 {
-    return isOutOfBounds(pos.x, pos.y);
+    return is_out_of_bounds(pos.x, pos.y);
 }
 
-bool SquareGridMap::isOutOfBounds(int x, int y) const
+bool SquareGridMap::is_out_of_bounds(int x, int y) const
 {
     return x < 0 || y < 0 || x >= width || y >= height;
 }
 
-float SquareGridMap::getCost(const Position2D& pos) const
+float SquareGridMap::get_cost(const Position2D &pos) const
 {
-    if (isOutOfBounds(pos))
+    if (is_out_of_bounds(pos))
     {
-        __lz::throwOutOfBoundsException(pos);  // TODO: Log this case
+        // TODO: Log this case
+        __lz::throw_out_of_bounds_exception(pos);
     }
 
-    if (!isWalkable(pos))
+    if (!is_walkable(pos))
     {
         std::stringstream msg;
         msg << "Tried to get cost of unwalkable tile at position ("
@@ -110,48 +111,47 @@ float SquareGridMap::getCost(const Position2D& pos) const
     return costs[pos.y * width + pos.x];
 }
 
-float SquareGridMap::getCost(int x, int y) const
+float SquareGridMap::get_cost(int x, int y) const
 {
-    return getCost(Position2D(x, y));
+    return get_cost(Position2D(x, y));
 }
 
-std::vector<Position2D> SquareGridMap::neighbours(const Position2D& pos) const
+std::vector<Position2D> SquareGridMap::neighbours(const Position2D &pos) const
 {
-    if (isOutOfBounds(pos))
-        __lz::throwOutOfBoundsException(pos);  // TODO: Log this case
+    if (is_out_of_bounds(pos))
+        // TODO: Log this case
+        __lz::throw_out_of_bounds_exception(pos);
 
     std::vector<Position2D> result;
     int x = pos.x, y = pos.y;
 
-    std::array<Position2D, 4> neighbourPositions{
+    std::array<Position2D, 4> neighbour_positions{
         Position2D(x - 1, y),
         Position2D(x + 1, y),
         Position2D(x, y - 1),
-        Position2D(x, y + 1)
-    };
+        Position2D(x, y + 1)};
 
-    for (Position2D neighbour : neighbourPositions)
+    for (Position2D neighbour : neighbour_positions)
     {
-        if (isWalkable(neighbour))
+        if (is_walkable(neighbour))
             result.push_back(neighbour);
     }
 
     if (diagonals)
     {
-        std::array<Position2D, 4> diagonalPositions{
+        std::array<Position2D, 4> diagonal_positions{
             Position2D(x - 1, y - 1),
             Position2D(x + 1, y + 1),
             Position2D(x + 1, y - 1),
-            Position2D(x - 1, y + 1)
-        };
+            Position2D(x - 1, y + 1)};
 
-        for (Position2D neighbour : diagonalPositions)
+        for (Position2D neighbour : diagonal_positions)
         {
-            if (isWalkable(neighbour))
+            if (is_walkable(neighbour))
                 result.push_back(neighbour);
         }
     }
-    
+
     return result;
 }
 
@@ -160,59 +160,61 @@ std::vector<Position2D> SquareGridMap::neighbours(int x, int y) const
     return neighbours(Position2D(x, y));
 }
 
-void SquareGridMap::setCost(const Position2D& pos, float cost)
+void SquareGridMap::set_cost(const Position2D &pos, float cost)
 {
-    if (isOutOfBounds(pos))
+    if (is_out_of_bounds(pos))
     {
-        __lz::throwOutOfBoundsException(pos);  // TODO: Log this case
+        // TODO: Log this case
+        __lz::throw_out_of_bounds_exception(pos);
     }
 
     costs[pos.y * width + pos.x] = cost;
 }
 
-void SquareGridMap::setCost(int x, int y, float cost)
+void SquareGridMap::set_cost(int x, int y, float cost)
 {
-    setCost(Position2D(x, y), cost);
+    set_cost(Position2D(x, y), cost);
 }
 
-void SquareGridMap::setWalkable(const Position2D& pos, bool walkable)
+void SquareGridMap::set_walkable(const Position2D &pos, bool walkable)
 {
-    if (isWalkable(pos) && walkable)
+    if (is_walkable(pos) && walkable)
         return;  // do nothing
-    setCost(pos, walkable ? 1. : -1.);
+    set_cost(pos, walkable ? 1. : -1.);
 }
 
-void SquareGridMap::setWalkable(int x, int y, bool walkable)
+void SquareGridMap::set_walkable(int x, int y, bool walkable)
 {
-    setWalkable(Position2D(x, y), walkable);
+    set_walkable(Position2D(x, y), walkable);
 }
 
-void SquareGridMap::setTransparency(const Position2D& pos, bool transparent)
+void SquareGridMap::set_transparency(const Position2D &pos, bool transparent)
 {
-    if (isOutOfBounds(pos))
+    if (is_out_of_bounds(pos))
     {
-        __lz::throwOutOfBoundsException(pos);  // TODO: Log this case
+        // TODO: Log this case
+        __lz::throw_out_of_bounds_exception(pos);
     }
 
     transparencies[pos.y * width + pos.x] = transparent;
 }
 
-void SquareGridMap::setTransparency(int x, int y, bool transparent)
+void SquareGridMap::set_transparency(int x, int y, bool transparent)
 {
-    setTransparency(Position2D(x, y), transparent);
+    set_transparency(Position2D(x, y), transparent);
 }
 
-void SquareGridMap::carveRoom(const Position2D& topLeft,
-                              const Position2D& bottomRight,
-                              float cost)
+void SquareGridMap::carve_room(const Position2D &top_left,
+                               const Position2D &bottom_right,
+                               float cost)
 {
-    for (int x = topLeft.x; x <= bottomRight.x; ++x)
+    for (int x = top_left.x; x <= bottom_right.x; ++x)
     {
-        for (int y = topLeft.y; y <= bottomRight.y; ++y)
+        for (int y = top_left.y; y <= bottom_right.y; ++y)
         {
             Position2D pos(x, y);
-            setCost(pos, cost);
-            setTransparency(pos, true);
+            set_cost(pos, cost);
+            set_transparency(pos, true);
         }
     }
 }
