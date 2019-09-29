@@ -153,6 +153,7 @@ void ECSEngine::apply_to_each(
     }
 }
 
+// TODO: Add subscribe method which creates the system internally
 template <typename EventType>
 void ECSEngine::subscribe(EventListener<EventType>* event_listener)
 {

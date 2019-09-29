@@ -1,10 +1,12 @@
 #pragma once
 
 #include <lazarus/Graphics/Tileset.h>
+#include <lazarus/SquareGridMap.h>
 
 namespace lz
 {
 using sf::Color;
+using sf::Event;
 
 class Window
 {
@@ -12,11 +14,23 @@ public:
     // TODO: Layering/subwindow system
     Window(int width, int height, Color bg_color = Color::Black);
 
+    int get_width() const;
+    int get_height() const;
+
     void load_tileset(const std::string &path, unsigned tile_size);
+
+    void set_tile(const Position2D &pos, int tile_id);
 
     void render();
 
-    void render_loop();
+    bool is_open() const;
+
+    void close();
+
+    bool poll_event(Event &event);
+
+protected:
+    void clear_buffer();
 
 private:
     // Dimensions in tiles of the window

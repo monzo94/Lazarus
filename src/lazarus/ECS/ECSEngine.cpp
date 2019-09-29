@@ -24,6 +24,7 @@ Entity* ECSEngine::get_entity(Identifier entity_id)
     return found->second.get();
 }
 
+// TODO: Add priority to updateables
 void ECSEngine::register_updateable(Updateable* updateable)
 {
     updateables.push_back(updateable);

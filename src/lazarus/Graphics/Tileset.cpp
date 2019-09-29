@@ -70,3 +70,8 @@ sf::Sprite &Tileset::get_tile(int id)
         return tiles[id];
     return tiles[0];  // Return first tile as placeholder
 }
+
+sf::Sprite &Tileset::get_tile(int x, int y)
+{
+    return get_tile(x + y * texture_width / tile_size);
+}

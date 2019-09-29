@@ -1,5 +1,4 @@
 #include <lazarus/Graphics/Window.h>
-#include <lazarus/Random.h>
 
 using namespace lz;
 
@@ -7,13 +6,40 @@ Window::Window(int width, int height, Color bg_color/*=Color::Black*/)
     : width(width)
     , height(height)
     , bg_color(bg_color)
+    , buffer(width * height, -1)
 {
+}
+
+int Window::get_width() const
+{
+    return width;
+}
+
+int Window::get_height() const
+{
+    return height;
 }
 
 void Window::load_tileset(const std::string &path, unsigned tile_size)
 {
     tileset.load(path, tile_size);
     window.create(sf::VideoMode(tile_size * width, tile_size * height), "Lazarus");
+}
+
+void Window::set_tile(const Position2D &pos, int tile_id)
+{
+    if (tile_id < 0 || tile_id >= tileset.get_num_tiles())
+    {
+        // Tile ID not valid
+        return;
+    }
+    int buff_pos = pos.x + width * pos.y;
+    if (buff_pos < 0 || buff_pos >= width * height)
+    {
+        // Position in window not valid
+        return;
+    }
+    buffer[buff_pos] = tile_id;
 }
 
 void Window::render()
@@ -28,30 +54,34 @@ void Window::render()
     {
         for (int x = 0; x < width; ++x)
         {
-            // TODO: for now print a random  sprite in the tileset
-            std::vector<int> indices(tileset.get_num_tiles());
-            std::iota(indices.begin(), indices.end(), 0);
-            int id = Random::choice(indices);
+            int id = buffer[x + y * width];
+            if (id == -1)
+                continue;
             sf::Sprite &sprite = tileset.get_tile(id);
             sprite.setPosition(x * tile_size, y * tile_size);
             window.draw(sprite);
         }
     }
     window.display();
+    clear_buffer();
 }
 
-// TODO: delete main loop from here, it is only for testing
-void Window::render_loop()
+bool Window::is_open() const
 {
-    while (window.isOpen())
-    {
-        sf::Event event;
-        while (window.pollEvent(event))
-        {
-            if (event.type == sf::Event::Closed)
-                window.close();
-        }
+    return window.isOpen();
+}
 
-        render();
-    }
+void Window::close()
+{
+    window.close();
+}
+
+bool Window::poll_event(Event &event)
+{
+    return window.pollEvent(event);
+}
+
+void Window::clear_buffer()
+{
+    std::fill(buffer.begin(), buffer.end(), -1);
 }
