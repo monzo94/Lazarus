@@ -38,6 +38,8 @@ std::vector<Position2D> lz::cast_ray(const Position2D &origin,
         if (transparent)
             points.emplace_back(isSteep ? y : x, isSteep ? x : y);
 
+        // TODO: pass an entity engine and check if there's a light blocking entity
+        // in the current position too
         if (cancellable && !transparent)
             break;
 
@@ -73,16 +75,21 @@ std::set<Position2D> lz::simple_fov(const Position2D &origin, const int &range,
     visible.insert(origin);
 
     // Cast rays in all directions given by a square with the set range
-    // TODO: Use a "circle" instead of a square so that the range in the
-    // diagonals is not larger
-    std::set<Position2D> circle = circle2D(origin, range);
-    for (auto pos : circle)
+    // TODO: when casting ray in diagonal direction, shorten range proportionally
+    // to get a 'sphere' FOV
+    for (int i = -range; i <= range; ++i)
     {
-        auto ray = cast_ray(origin, pos, &map, true);
-        std::copy(ray.begin(), ray.end(),
-                  std::inserter(visible, visible.begin()));
+        std::vector<Position2D> vertices{Position2D(origin.x + i, origin.y - range),
+                                         Position2D(origin.x + i, origin.y + range),
+                                         Position2D(origin.x - range, origin.y + i),
+                                         Position2D(origin.x + range, origin.y + i)};
+        for (auto pos : vertices)
+        {
+            auto ray = cast_ray(origin, pos, &map, true);
+            std::copy(ray.begin(), ray.end(),
+                      std::inserter(visible, visible.begin()));
+        }
     }
-
     return visible;
 }
 
