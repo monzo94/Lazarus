@@ -19,7 +19,7 @@ public:
 
     void load_tileset(const std::string &path, unsigned tile_size);
 
-    void set_tile(const Position2D &pos, int tile_id);
+    void set_tile(const Position2D &pos, int tile_id, Color color=Color::White);
 
     void render();
 
@@ -40,7 +40,7 @@ private:
     // The tileset that the window uses to draw sprites
     Tileset tileset;
     // Tile ID to print at each position on render
-    std::vector<int> buffer;
+    std::vector<std::pair<int, Color>> buffer;
     Color bg_color;
 };
 }  // namespace lz

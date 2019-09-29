@@ -6,8 +6,9 @@ Window::Window(int width, int height, Color bg_color/*=Color::Black*/)
     : width(width)
     , height(height)
     , bg_color(bg_color)
-    , buffer(width * height, -1)
+    , buffer(width * height)
 {
+    clear_buffer();
 }
 
 int Window::get_width() const
@@ -26,7 +27,7 @@ void Window::load_tileset(const std::string &path, unsigned tile_size)
     window.create(sf::VideoMode(tile_size * width, tile_size * height), "Lazarus");
 }
 
-void Window::set_tile(const Position2D &pos, int tile_id)
+void Window::set_tile(const Position2D &pos, int tile_id, Color color)
 {
     if (tile_id < 0 || tile_id >= tileset.get_num_tiles())
     {
@@ -39,7 +40,7 @@ void Window::set_tile(const Position2D &pos, int tile_id)
         // Position in window not valid
         return;
     }
-    buffer[buff_pos] = tile_id;
+    buffer[buff_pos] = std::make_pair(tile_id, color);
 }
 
 void Window::render()
@@ -54,11 +55,14 @@ void Window::render()
     {
         for (int x = 0; x < width; ++x)
         {
-            int id = buffer[x + y * width];
+            int id;
+            Color color;
+            std::tie(id, color) = buffer[x + y * width];
             if (id == -1)
                 continue;
             sf::Sprite &sprite = tileset.get_tile(id);
             sprite.setPosition(x * tile_size, y * tile_size);
+            sprite.setColor(color);
             window.draw(sprite);
         }
     }
@@ -83,5 +87,5 @@ bool Window::poll_event(Event &event)
 
 void Window::clear_buffer()
 {
-    std::fill(buffer.begin(), buffer.end(), -1);
+    std::fill(buffer.begin(), buffer.end(), std::make_pair(-1, Color::White));
 }
