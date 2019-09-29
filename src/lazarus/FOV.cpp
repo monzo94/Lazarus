@@ -35,8 +35,7 @@ std::vector<Position2D> lz::cast_ray(const Position2D &origin,
         Position2D pos{isSteep ? y : x, isSteep ? x : y};
         bool transparent = !map || map->is_transparent(pos);
 
-        if (transparent)
-            points.emplace_back(isSteep ? y : x, isSteep ? x : y);
+        points.emplace_back(isSteep ? y : x, isSteep ? x : y);
 
         // TODO: pass an entity engine and check if there's a light blocking entity
         // in the current position too
