@@ -40,6 +40,12 @@ bool los(const Position2D &origin,
  */
 std::set<Position2D> simple_fov(const Position2D &origin, const int &range,
                                 const SquareGridMap &map);
+
+/**
+ * Return the positions on the circle at the given radius from the origin.
+ */
+std::set<lz::Position2D> circle2D(const lz::Position2D &origin,
+                                  const int &radius);
 }  // namespace lz
 
 namespace __lz
@@ -50,8 +56,4 @@ void add_octants(const lz::Position2D &origin,
                  const int &x,
                  const int &y,
                  std::set<lz::Position2D> &points);
-
-// Return the circles on the circle at the given radius.
-std::set<lz::Position2D> circle2D(const lz::Position2D &origin,
-                                  const int &radius);
 }

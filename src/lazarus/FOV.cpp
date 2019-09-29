@@ -75,7 +75,7 @@ std::set<Position2D> lz::simple_fov(const Position2D &origin, const int &range,
     // Cast rays in all directions given by a square with the set range
     // TODO: Use a "circle" instead of a square so that the range in the
     // diagonals is not larger
-    std::set<Position2D> circle = __lz::circle2D(origin, range);
+    std::set<Position2D> circle = circle2D(origin, range);
     for (auto pos : circle)
     {
         auto ray = cast_ray(origin, pos, &map, true);
@@ -84,6 +84,30 @@ std::set<Position2D> lz::simple_fov(const Position2D &origin, const int &range,
     }
 
     return visible;
+}
+
+std::set<Position2D> lz::circle2D(const Position2D &origin,
+                                  const int &radius)
+{
+    // Find circle positions for one octant and replicate to all other
+    // octants using a modification of Bresenham's algorithm
+    std::set<Position2D> circle;
+    int x = 0, y = radius;
+    int d = 3 - 2 * radius;
+    __lz::add_octants(origin, x, y, circle);
+    while (y >= x)
+    {
+        x++;
+        if (d > 0)
+        {
+            y--;
+            d += + 4 * (x - y) + 10;
+        }
+        else
+            d += + 4 * x + 6;
+        __lz::add_octants(origin, x, y, circle);
+    }
+    return circle;
 }
 
 void __lz::add_octants(const Position2D &origin,
@@ -100,28 +124,4 @@ void __lz::add_octants(const Position2D &origin,
     points.insert(Position2D(xc - y, yc + x));
     points.insert(Position2D(xc + y, yc - x));
     points.insert(Position2D(xc - y, yc - x));
-}
-
-std::set<Position2D> __lz::circle2D(const Position2D &origin,
-                                       const int &radius)
-{
-    // Find circle positions for one octant and replicate to all other
-    // octants using a modification of Bresenham's algorithm
-    std::set<Position2D> circle;
-    int x = 0, y = radius;
-    int d = 3 - 2 * radius;
-    add_octants(origin, x, y, circle);
-    while (y >= x)
-    {
-        x++;
-        if (d > 0)
-        {
-            y--;
-            d += + 4 * (x - y) + 10;
-        }
-        else
-            d += + 4 * x + 6;
-        add_octants(origin, x, y, circle);
-    }
-    return circle;
 }
