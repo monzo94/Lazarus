@@ -1,4 +1,5 @@
 #include <lazarus/FOV.h>
+#include <lazarus/common.h>
 #include <algorithm>
 #include <cmath>
 
@@ -68,33 +69,19 @@ bool lz::los(const Position2D &origin,
     return ray.back() == dest;
 }
 
-std::set<Position2D> lz::simple_fov(const Position2D &origin, const int &range,
-                                    const SquareGridMap &map)
+std::set<Position2D> lz::fov(const Position2D &origin,
+                             const int &range,
+                             const SquareGridMap &map,
+                             FOV algorithm)
 {
-    std::set<Position2D> visible;
-    // Origin is always visible
-    visible.insert(origin);
-
-    // Cast rays in all directions given by a square with the set range
-    // TODO: when casting ray in diagonal direction, shorten range proportionally
-    // to get a 'sphere' FOV
-    for (int i = -range; i <= range; ++i)
+    switch (algorithm)
     {
-        // Shorten diagonals proportionally to make a "circle" FOV
-        double slope_factor = 1. + ((std::sqrt(2) - 1.) * std::abs(i)) / range;
-        int max_cast_dist = std::ceil(range / slope_factor);
-        std::vector<Position2D> vertices{Position2D(origin.x + i, origin.y - range),
-                                         Position2D(origin.x + i, origin.y + range),
-                                         Position2D(origin.x - range, origin.y + i),
-                                         Position2D(origin.x + range, origin.y + i)};
-        for (auto pos : vertices)
-        {
-            auto ray = cast_ray(origin, pos, &map, max_cast_dist, true);
-            std::copy(ray.begin(), ray.end(),
-                      std::inserter(visible, visible.begin()));
-        }
+    case FOV::Simple:
+        return __lz::fov_simple(origin, range, map);
+        break;
+    default:
+        throw __lz::LazarusException("FOV algorithm not implemented.");
     }
-    return visible;
 }
 
 std::set<Position2D> lz::circle2D(const Position2D &origin,
@@ -135,4 +122,34 @@ void __lz::add_octants(const Position2D &origin,
     points.insert(Position2D(xc - y, yc + x));
     points.insert(Position2D(xc + y, yc - x));
     points.insert(Position2D(xc - y, yc - x));
+}
+
+std::set<Position2D> __lz::fov_simple(const Position2D &origin,
+                                      const int &range,
+                                      const SquareGridMap &map)
+{
+    std::set<Position2D> visible;
+    // Origin is always visible
+    visible.insert(origin);
+
+    // Cast rays in all directions given by a square with the set range
+    // TODO: when casting ray in diagonal direction, shorten range proportionally
+    // to get a 'sphere' FOV
+    for (int i = -range; i <= range; ++i)
+    {
+        // Shorten diagonals proportionally to make a "circle" FOV
+        double slope_factor = 1. + ((std::sqrt(2) - 1.) * std::abs(i)) / range;
+        int max_cast_dist = std::ceil(range / slope_factor);
+        std::vector<Position2D> vertices{Position2D(origin.x + i, origin.y - range),
+                                         Position2D(origin.x + i, origin.y + range),
+                                         Position2D(origin.x - range, origin.y + i),
+                                         Position2D(origin.x + range, origin.y + i)};
+        for (auto pos : vertices)
+        {
+            auto ray = cast_ray(origin, pos, &map, max_cast_dist, true);
+            std::copy(ray.begin(), ray.end(),
+                      std::inserter(visible, visible.begin()));
+        }
+    }
+    return visible;
 }

@@ -7,6 +7,14 @@
 namespace lz
 {
 /**
+ * Available FOV algorithms.
+ */
+enum class FOV
+{
+    Simple
+};
+
+/**
  * Cast a linear ray from the origin to the destination and return
  * the visible positions.
  * 
@@ -42,8 +50,10 @@ bool los(const Position2D &origin,
  * Return a vector of the positions that are visible from the origin at a given range
  * in the map.
  */
-std::set<Position2D> simple_fov(const Position2D &origin, const int &range,
-                                const SquareGridMap &map);
+std::set<Position2D> fov(const Position2D &origin,
+                         const int &range,
+                         const SquareGridMap &map,
+                         FOV algorithm = FOV::Simple);
 
 /**
  * Return the positions on the circle at the given radius from the origin.
@@ -60,4 +70,8 @@ void add_octants(const lz::Position2D &origin,
                  const int &x,
                  const int &y,
                  std::set<lz::Position2D> &points);
+
+std::set<lz::Position2D> fov_simple(const lz::Position2D &origin,
+                                    const int &range,
+                                    const lz::SquareGridMap &map);
 }
