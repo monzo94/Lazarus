@@ -67,8 +67,8 @@ namespace __lz
 // Adds all the combinations of positions from the origin with the given
 // offsets to the set of positions
 void add_octants(const lz::Position2D &origin,
-                 const int &x,
-                 const int &y,
+                 const long &x,
+                 const long &y,
                  std::set<lz::Position2D> &points);
 
 std::set<lz::Position2D> fov_simple(const lz::Position2D &origin,

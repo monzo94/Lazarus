@@ -35,6 +35,11 @@ std::vector<Position2D> lz::cast_ray(const Position2D &origin,
     for (int x = x0; x != x1 + xstep; x += xstep)
     {
         Position2D pos{isSteep ? y : x, isSteep ? x : y};
+
+        // If ray goes out of bounds, stop the cast
+        if (map->is_out_of_bounds(pos))
+            break;
+
         bool transparent = !map || map->is_transparent(pos);
 
         points.emplace_back(isSteep ? y : x, isSteep ? x : y);
@@ -109,8 +114,8 @@ std::set<Position2D> lz::circle2D(const Position2D &origin,
 }
 
 void __lz::add_octants(const Position2D &origin,
-                       const int &x,
-                       const int &y,
+                       const long &x,
+                       const long &y,
                        std::set<Position2D> &points)
 {
     int xc = origin.x, yc = origin.y;
@@ -135,17 +140,17 @@ std::set<Position2D> __lz::fov_simple(const Position2D &origin,
     // Cast rays in all directions given by a square with the set range
     // TODO: when casting ray in diagonal direction, shorten range proportionally
     // to get a 'sphere' FOV
-    for (int i = -range; i <= range; ++i)
+    for (unsigned long idx = 0; idx <= range; ++idx)
     {
         // Shorten diagonals proportionally to make a "circle" FOV
-        double slope_factor = 1. + ((std::sqrt(2) - 1.) * std::abs(i)) / range;
+        double slope_factor = 1. + ((std::sqrt(2) - 1.) * idx) / range;
         int max_cast_dist = std::ceil(range / slope_factor);
-        std::vector<Position2D> vertices{Position2D(origin.x + i, origin.y - range),
-                                         Position2D(origin.x + i, origin.y + range),
-                                         Position2D(origin.x - range, origin.y + i),
-                                         Position2D(origin.x + range, origin.y + i)};
+        std::set<Position2D> vertices;
+        __lz::add_octants(origin, idx, range, vertices);
         for (auto pos : vertices)
         {
+            if (map.is_out_of_bounds(pos))
+                continue;
             auto ray = cast_ray(origin, pos, &map, max_cast_dist, true);
             std::copy(ray.begin(), ray.end(),
                       std::inserter(visible, visible.begin()));
