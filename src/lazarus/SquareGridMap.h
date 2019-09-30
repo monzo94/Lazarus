@@ -16,7 +16,7 @@ struct Position2D
     /**
      * Construct a position from the given coordinates.
      */
-    Position2D(int x, int y);
+    Position2D(long x, long y);
 
     bool operator==(const Position2D& other) const;
 
@@ -24,7 +24,7 @@ struct Position2D
 
     bool operator<(const Position2D& other) const;
 
-    int x, y;
+    long x, y;
 };
 
 /**
@@ -59,17 +59,17 @@ public:
      * @param height Maximum height of the map.
      * @param diagonals Whether or not to consider diagonals as adjacent tiles.
      */
-    SquareGridMap(unsigned width, unsigned height, bool diagonals=false);
+    SquareGridMap(unsigned long width, unsigned long height, bool diagonals=false);
 
     /**
      * @return The width of the map.
      */
-    unsigned get_width() const;
+    unsigned long get_width() const;
     
     /**
      * @return The height of the map.
      */
-    unsigned get_height() const;
+    unsigned long get_height() const;
 
     /**
      * Returns whether the tile at the given position is walkable.
@@ -79,7 +79,7 @@ public:
      * @return `true` if the tile at the given position is walkable, `false` if it is
      * not walkable or if the position is out of the boundaries of the map.
      * 
-     * @see is_walkable(int, int) const
+     * @see is_walkable(long, long) const
      */
     bool is_walkable(const Position2D& pos) const;
 
@@ -92,7 +92,7 @@ public:
      * 
      * @see is_walkable(const Position2D&) const
      */
-    bool is_walkable(int x, int y) const;
+    bool is_walkable(long x, long y) const;
 
     /**
      * Returns whether the tile at the given position is transparent.
@@ -102,7 +102,7 @@ public:
      * @return `true` if the tile at the given position is transparent, `false` if it is
      * not transparent or if the position is out of the boundaries of the map.
      * 
-     * @see is_transparent(int, int) const
+     * @see is_transparent(long, long) const
      */
     bool is_transparent(const Position2D& pos) const;
 
@@ -115,7 +115,7 @@ public:
      * 
      * @see is_transparent(const Position2D&) const
      */
-    bool is_transparent(int x, int y) const;
+    bool is_transparent(long x, long y) const;
 
     /**
      * Returns whether the given position is within the boundaries of the map.
@@ -125,7 +125,7 @@ public:
      * @return `true` if the tile is within the boundaries of the map, that is,
      * `0 <= x < width` and `0 <= y < height`, and `false` otherwise.
      * 
-     * @see is_out_of_bounds(int, int) const
+     * @see is_out_of_bounds(long, long) const
      */
     bool is_out_of_bounds(const Position2D& pos) const;
 
@@ -138,7 +138,7 @@ public:
      * 
      * @see is_out_of_bounds(const Position2D&) const
      */
-    bool is_out_of_bounds(int x, int y) const;
+    bool is_out_of_bounds(long x, long y) const;
 
     /**
      * Gets the cost of the tile at the given position.
@@ -150,7 +150,7 @@ public:
      * 
      * @return The cost of accessing the tile from an adjacent tile.
      * 
-     * @see get_cost(int, int) const
+     * @see get_cost(long, long) const
      */
     float get_cost(const Position2D& pos) const;
 
@@ -163,7 +163,7 @@ public:
      * 
      * @see get_cost(const Position2D&) const
      */
-    float get_cost(int x, int y) const;
+    float get_cost(long x, long y) const;
 
     /**
      * Sets the cost of the tile at the given position.
@@ -173,7 +173,7 @@ public:
      * 
      * @throws LazarusException If the position is outside of the boundaries of the map.
      * 
-     * @see set_cost(int, int, float);
+     * @see set_cost(long, long, float);
      */
     void set_cost(const Position2D& pos, float cost);
 
@@ -186,7 +186,7 @@ public:
      * 
      * @see set_cost(const Position2D& pos, float cost) const
      */
-    void set_cost(int x, int y, float cost);
+    void set_cost(long x, long y, float cost);
 
     /**
      * Changes the walkability of the tile at the given position.
@@ -201,7 +201,7 @@ public:
      * 
      * @throws LazarusException If the position is outside of the boundaries of the map.
      * 
-     * @see set_walkable(int, int, bool);
+     * @see set_walkable(long, long, bool);
      */
     void set_walkable(const Position2D& pos, bool walkable);
 
@@ -214,7 +214,7 @@ public:
      * 
      * @see set_walkable(const Position2D& pos, bool walkable) const
      */
-    void set_walkable(int x, int y, bool walkable);
+    void set_walkable(long x, long y, bool walkable);
 
     /**
      * Changes the transparency of the tile at the given position.
@@ -224,7 +224,7 @@ public:
      * 
      * @throws LazarusException If the position is outside of the boundaries of the map.
      * 
-     * @see set_transparency(int, int, bool)
+     * @see set_transparency(long, long, bool)
      */
     void set_transparency(const Position2D& pos, bool transparent);
 
@@ -237,7 +237,7 @@ public:
      * 
      * @see set_transparency(const Position2D& pos, bool transparent) const
      */
-    void set_transparency(int x, int y, bool transparent);
+    void set_transparency(long x, long y, bool transparent);
 
     /**
      * Returns a vector with the walkable tiles adjacent to the tile at the given position.
@@ -253,7 +253,7 @@ public:
      * 
      * @return A list of walkable tiles adjacent to the tile at position `pos`.
      * 
-     * @see neighbours(int, int) const
+     * @see neighbours(long, long) const
      */
     virtual std::vector<Position2D> neighbours(const Position2D& pos) const;
 
@@ -266,7 +266,7 @@ public:
      * 
      * @see neighbours(const Position2D& pos) const
      */
-    virtual std::vector<Position2D> neighbours(int x, int y) const;
+    virtual std::vector<Position2D> neighbours(long x, long y) const;
 
     /**
      * Makes a rectangular area of tiles walkable and transparent.
@@ -284,7 +284,7 @@ public:
 
 private:
     bool diagonals = false;
-    unsigned width, height;
+    unsigned long width, height;
     std::vector<float> costs;
     std::vector<bool> transparencies;
 };
