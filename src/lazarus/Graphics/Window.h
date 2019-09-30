@@ -29,9 +29,6 @@ public:
 
     bool poll_event(Event &event);
 
-protected:
-    void clear_buffer();
-
 private:
     // Dimensions in tiles of the window
     int width, height;
@@ -39,8 +36,7 @@ private:
     sf::RenderWindow window;
     // The tileset that the window uses to draw sprites
     Tileset tileset;
-    // Tile ID to print at each position on render
-    std::vector<std::pair<int, Color>> buffer;
+    // Background color for when a tile is not rendered
     Color bg_color;
 };
 }  // namespace lz

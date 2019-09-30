@@ -6,9 +6,7 @@ Window::Window(int width, int height, Color bg_color/*=Color::Black*/)
     : width(width)
     , height(height)
     , bg_color(bg_color)
-    , buffer(width * height)
 {
-    clear_buffer();
 }
 
 int Window::get_width() const
@@ -34,40 +32,19 @@ void Window::set_tile(const Position2D &pos, int tile_id, Color color)
         // Tile ID not valid
         return;
     }
-    int buff_pos = pos.x + width * pos.y;
-    if (buff_pos < 0 || buff_pos >= width * height)
-    {
-        // Position in window not valid
-        return;
-    }
-    buffer[buff_pos] = std::make_pair(tile_id, color);
+    unsigned tile_size = tileset.get_tile_size();
+    sf::Sprite &sprite = tileset.get_tile(tile_id);
+    sprite.setPosition(pos.x * tile_size, pos.y * tile_size);
+    sprite.setColor(color);
+    window.draw(sprite);
+    return;
 }
 
 void Window::render()
 {
-    window.clear(bg_color);
-    unsigned tile_size = tileset.get_tile_size();
-    if (tile_size == 0)
-        return;  // No tileset loaded
-
-    // Draw all the tiles
-    for (int y = 0; y < height; ++y)
-    {
-        for (int x = 0; x < width; ++x)
-        {
-            int id;
-            Color color;
-            std::tie(id, color) = buffer[x + y * width];
-            if (id == -1)
-                continue;
-            sf::Sprite &sprite = tileset.get_tile(id);
-            sprite.setPosition(x * tile_size, y * tile_size);
-            sprite.setColor(color);
-            window.draw(sprite);
-        }
-    }
+    // Display contents and clear for future draws
     window.display();
-    clear_buffer();
+    window.clear(bg_color);
 }
 
 bool Window::is_open() const
@@ -83,9 +60,4 @@ void Window::close()
 bool Window::poll_event(Event &event)
 {
     return window.pollEvent(event);
-}
-
-void Window::clear_buffer()
-{
-    std::fill(buffer.begin(), buffer.end(), std::make_pair(-1, Color::White));
 }
