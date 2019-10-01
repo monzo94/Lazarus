@@ -149,11 +149,15 @@ std::set<Position2D> __lz::fov_simple(const Position2D &origin,
         __lz::add_octants(origin, idx, range, vertices);
         for (auto pos : vertices)
         {
-            if (map.is_out_of_bounds(pos))
-                continue;
             auto ray = cast_ray(origin, pos, &map, max_cast_dist, true);
-            std::copy(ray.begin(), ray.end(),
-                      std::inserter(visible, visible.begin()));
+            // Add the entire line trajectory to visible,
+            // except for out of bounds tiles
+            std::copy_if(ray.begin(), ray.end(),
+                         std::inserter(visible, visible.begin()),
+                         [&](auto ray_pos)
+                         {
+                             return !map.is_out_of_bounds(ray_pos);
+                         });
         }
     }
     return visible;
