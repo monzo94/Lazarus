@@ -48,7 +48,7 @@ TEST_CASE("A* on grid map")
                                                             Position2D(1, 3),
                                                             Position2D(4, 3));
         REQUIRE_NOTHROW(astar_search.execute());
-        REQUIRE(astar_search.getState() == SearchState::SUCCESS);
+        REQUIRE(astar_search.get_state() == SearchState::SUCCESS);
         auto path = astar_search.getPath();
         REQUIRE(path.size() == 5);
         REQUIRE(path[0] == Position2D(1, 4));
@@ -63,7 +63,7 @@ TEST_CASE("A* on grid map")
                                                             Position2D(1, 3),
                                                             Position2D(4, 3));
         REQUIRE_NOTHROW(astar_search.execute());
-        REQUIRE(astar_search.getState() == SearchState::SUCCESS);
+        REQUIRE(astar_search.get_state() == SearchState::SUCCESS);
         auto path = astar_search.getPath();
         REQUIRE(path.size() == 3);
         REQUIRE(path[0] == Position2D(2, 4));
@@ -75,7 +75,7 @@ TEST_CASE("A* on grid map")
                                                             Position2D(4, 0),
                                                             Position2D(0, 0));
         REQUIRE_NOTHROW(astar_search.execute());
-        REQUIRE(astar_search.getState() == SearchState::FAILED);
+        REQUIRE(astar_search.get_state() == SearchState::FAILED);
         REQUIRE_THROWS_AS(astar_search.getPath(), __lz::LazarusException);        
     }
     SECTION("getting path on an unfinished search")
@@ -83,7 +83,7 @@ TEST_CASE("A* on grid map")
         AStarSearch<Position2D, SquareGridMap> astar_search(map,
                                                             Position2D(1, 3),
                                                             Position2D(4, 3));
-        REQUIRE(astar_search.getState() == SearchState::READY);
+        REQUIRE(astar_search.get_state() == SearchState::READY);
         REQUIRE_THROWS_AS(astar_search.getPath(), __lz::LazarusException);
     }
     SECTION("re-initialize search")
@@ -92,9 +92,9 @@ TEST_CASE("A* on grid map")
                                                             Position2D(1, 3),
                                                             Position2D(4, 3));
         REQUIRE_NOTHROW(astar_search.execute());
-        REQUIRE(astar_search.getState() == SearchState::SUCCESS);
+        REQUIRE(astar_search.get_state() == SearchState::SUCCESS);
         REQUIRE_NOTHROW(astar_search.init(Position2D(2, 3), Position2D(1, 2)));
-        REQUIRE(astar_search.getState() == SearchState::READY);
+        REQUIRE(astar_search.get_state() == SearchState::READY);
         REQUIRE_THROWS_AS(astar_search.getPath(), __lz::LazarusException);
     }
     SECTION("A* on grid map with varying costs")

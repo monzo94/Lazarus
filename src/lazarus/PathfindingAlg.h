@@ -75,7 +75,7 @@ public:
         state = SearchState::READY;
     }
 
-    SearchState getState() const { return state; }
+    SearchState get_state() const { return state; }
 
     /**
      * Executes a search with previously initialized data.
