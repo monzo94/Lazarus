@@ -37,10 +37,8 @@ public:
 
     /**
      * Loads a tileset and creates the window,
-     * using the tile size to calculate the final dimensions
-     * of the window.
      */
-    void load_tileset(const std::string &path, unsigned tile_size);
+    void load_tileset(const std::string &path);
 
     /**
      * Draws the tile with the given ID from the tileset at the

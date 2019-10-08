@@ -19,10 +19,12 @@ int Window::get_height() const
     return height;
 }
 
-void Window::load_tileset(const std::string &path, unsigned tile_size)
+void Window::load_tileset(const std::string &path)
 {
-    tileset.load(path, tile_size);
-    window.create(sf::VideoMode(tile_size * width, tile_size * height), "Lazarus");
+    tileset.load(path);
+    window.create(sf::VideoMode(tileset.get_tile_width() * width,
+                                tileset.get_tile_height() * height),
+                  "Lazarus");
 }
 
 void Window::set_tile(const Position2D &pos, int tile_id, Color color)
@@ -32,9 +34,8 @@ void Window::set_tile(const Position2D &pos, int tile_id, Color color)
         // Tile ID not valid
         return;
     }
-    unsigned tile_size = tileset.get_tile_size();
     sf::Sprite &sprite = tileset.get_tile(tile_id);
-    sprite.setPosition(pos.x * tile_size, pos.y * tile_size);
+    sprite.setPosition(pos.x * tileset.get_tile_width(), pos.y * tileset.get_tile_height());
     sprite.setColor(color);
     window.draw(sprite);
     return;

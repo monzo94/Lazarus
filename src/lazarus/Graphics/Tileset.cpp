@@ -1,30 +1,37 @@
 #include <lazarus/Graphics/Tileset.h>
-
 #include <lazarus/common.h>
+#include <filesystem>
+#include <regex>
 
 using namespace lz;
 
 Tileset::Tileset()
-    : tile_size(0)
+    : tile_width(0)
+    , tile_height(0)
     , num_tiles(0)
     , texture_width(0)
     , texture_height(0)
 {
 }
 
-Tileset::Tileset(const std::string &path, const unsigned size)
+Tileset::Tileset(const std::string &path)
 {
-    load(path, size);
+    load(path);
 }
 
 bool Tileset::is_loaded() const
 {
-    return !tiles.empty() && tile_size != 0;
+    return !tiles.empty() && !tileset_name.empty();
 }
 
-unsigned Tileset::get_tile_size() const
+unsigned Tileset::get_tile_width() const
 {
-    return tile_size;
+    return tile_width;
+}
+
+unsigned Tileset::get_tile_height() const
+{
+    return tile_height;
 }
 
 unsigned Tileset::get_num_tiles() const
@@ -32,9 +39,23 @@ unsigned Tileset::get_num_tiles() const
     return num_tiles;
 }
 
-void Tileset::load(const std::string &path, const unsigned size)
+void Tileset::load(const std::string &path)
 {
-    tile_size = size;
+    // Get tileset name and size from the filename
+    std::string filename_without_ext{std::filesystem::path(path).stem()};
+    std::regex re("(\\w+)_(\\d+)x(\\d+)");
+    std::smatch match;
+    if (std::regex_search(filename_without_ext, match, re) && match.size() > 3)
+    {
+        // match[0] is the total match
+        // 1, 2 and 3 contain each of the groups
+        tileset_name = match[1].str();
+        tile_width = std::atoi(match[2].str().c_str());
+        tile_height = std::atoi(match[3].str().c_str());
+    }
+    else
+        throw __lz::LazarusException("Texture filename is not correctly formatted");
+    
 
     // Load the image file
     if (!texture.loadFromFile(path))
@@ -45,19 +66,20 @@ void Tileset::load(const std::string &path, const unsigned size)
     sf::Vector2u image_size = texture.getSize();
     texture_width = image_size.x;
     texture_height = image_size.y;
-    if (texture_width % size || texture_height % size)
+    if (texture_width % tile_width || texture_height % tile_height)
         throw __lz::LazarusException("The tilemap has wrong dimensions: " + path);
 
     // Clear the old tileset and load the new one
-    num_tiles = texture_width * texture_height / (size * size);
+    num_tiles = texture_width * texture_height / (tile_width * tile_height);
     tiles.clear();
     // Assign an id to each tile in reading order
     for (int id = 0; id < num_tiles; ++id)
     {
-        int col = id % (texture_width / size);
-        int row = id / (texture_width / size);
+        int col = id % (texture_width / tile_width);
+        int row = id / (texture_width / tile_height);
 
-        sf::IntRect sprite_rect(col * size, row * size, size, size);
+        sf::IntRect sprite_rect(col * tile_width, row * tile_height,
+                                tile_width, tile_height);
         tiles.emplace_back(texture, sprite_rect);
     }
 }
@@ -73,5 +95,5 @@ sf::Sprite &Tileset::get_tile(int id)
 
 sf::Sprite &Tileset::get_tile(int x, int y)
 {
-    return get_tile(x + y * texture_width / tile_size);
+    return get_tile(x + y * texture_width / tile_width);
 }

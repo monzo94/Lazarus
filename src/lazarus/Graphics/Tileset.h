@@ -26,12 +26,16 @@ public:
     /**
      * Constructor which loads a texture calling Tileset::load.
      */
-    Tileset(const std::string &path, const unsigned size);
+    Tileset(const std::string &path);
 
     /**
-     * Loads a texture from the image at the given path, with the given tile size.
+     * Loads a texture from the image at the given path.
+     * 
+     * The image must have a filename in the following format: name_widthxheight
+     * For example, the my_texture_12x12.png has the correct format, with
+     * name my_texture, width 12 and height 12. 
      */
-    void load(const std::string &path, const unsigned size);
+    void load(const std::string &path);
 
     /**
      * Return whether a valid texture has been loaded.
@@ -39,12 +43,14 @@ public:
     bool is_loaded() const;
 
     /**
-     * Return the size of each tile in pixels.
-     * 
-     * Since tiles are square, the size is both the width and
-     * the height of the tile.
+     * Return the width of each tile in pixels.
      */
-    unsigned get_tile_size() const;
+    unsigned get_tile_width() const;
+
+    /**
+     * Return the height of each tile in pixels.
+     */
+    unsigned get_tile_height() const;
 
     /**
      * Get the total number of tiles loaded from the texture.
@@ -66,9 +72,10 @@ private:
     // Currently loaded texture
     sf::Texture texture;
     unsigned texture_width, texture_height;
+    std::string tileset_name;
 
     // Width and height per tile of the currently loaded texture
-    unsigned tile_size;
+    unsigned tile_width, tile_height;
 
     // Number of tiles in the tileset
     unsigned num_tiles;
