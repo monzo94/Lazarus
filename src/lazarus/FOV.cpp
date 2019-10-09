@@ -138,8 +138,6 @@ std::set<Position2D> __lz::fov_simple(const Position2D &origin,
     visible.insert(origin);
 
     // Cast rays in all directions given by a square with the set range
-    // TODO: when casting ray in diagonal direction, shorten range proportionally
-    // to get a 'sphere' FOV
     for (unsigned long idx = 0; idx <= range; ++idx)
     {
         // Shorten diagonals proportionally to make a "circle" FOV
