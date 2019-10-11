@@ -9,7 +9,7 @@ branches:
 addons:
   apt:
     packages:
-      - g++-5
+      - g++-8
       - cmake
       - doxygen
       - libopenal-dev
@@ -26,15 +26,15 @@ addons:
       - llvm-toolchain-precise-3.8
       - ubuntu-toolchain-r-test
 
-compiler: g++-5
+compiler: g++-8
 os: linux
 
 install:
   - scripts/sfml.sh
 
 env:
-  - COMMAND="scripts/build.sh" COMPILER_NAME=gcc CXX=g++-5 CC=gcc-5 ENV=tests
-  - COMMAND="doxygen Doxyfile" COMPILER_NAME=gcc CXX=g++-5 CC=gcc-5 ENV=doc
+  - COMMAND="scripts/build.sh" COMPILER_NAME=gcc CXX=g++-8 CC=gcc-8 ENV=tests
+  - COMMAND="doxygen Doxyfile" COMPILER_NAME=gcc CXX=g++-8 CC=gcc-8 ENV=doc
 
 script:
   - (eval "$COMMAND")
