@@ -23,7 +23,19 @@ class Window
 {
 public:
     // TODO: Layering/subwindow system
-    Window(int width, int height, Color bg_color = Color::Black);
+    /**
+     * Default constructor.
+     * 
+     * The actual window is not created until a tileset is loaded.
+     */
+    Window();
+
+    /**
+     * Initializes the window with the given dimensions in tiles
+     * and background color.
+     */
+    void init(Tileset &tileset, int width, int height, std::string title,
+              Color bg_color = Color::Black);
 
     /**
      * Returns the width in tiles of the window.
@@ -34,11 +46,6 @@ public:
      * Returns the height in tiles of the window.
      */
     int get_height() const;
-
-    /**
-     * Loads a tileset and creates the window,
-     */
-    void load_tileset(const std::string &path);
 
     /**
      * Draws the tile with the given ID from the tileset at the
@@ -86,7 +93,7 @@ private:
     // The window itself
     sf::RenderWindow window;
     // The tileset that the window uses to draw sprites
-    Tileset tileset;
+    Tileset *tileset;
     // Background color for when a tile is not rendered
     Color bg_color;
 };

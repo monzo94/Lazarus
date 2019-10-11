@@ -2,11 +2,27 @@
 
 using namespace lz;
 
-Window::Window(int width, int height, Color bg_color/*=Color::Black*/)
-    : width(width)
-    , height(height)
-    , bg_color(bg_color)
+Window::Window()
+    : width(0)
+    , height(0)
+    , tileset(nullptr)
+    , bg_color(Color::Black)
 {
+}
+
+void Window::init(Tileset &tileset_, int width_,
+                  int height_, std::string title, Color bg_color_)
+{
+    tileset = &tileset_;
+    width = width_;
+    height = height_;
+    bg_color = bg_color_;
+    if (tileset->is_loaded() && width > 0 && height > 0)
+    {
+        window.create(sf::VideoMode(tileset->get_tile_width() * width,
+                                    tileset->get_tile_height() * height),
+                      title);
+    }
 }
 
 int Window::get_width() const
@@ -19,23 +35,18 @@ int Window::get_height() const
     return height;
 }
 
-void Window::load_tileset(const std::string &path)
-{
-    tileset.load(path);
-    window.create(sf::VideoMode(tileset.get_tile_width() * width,
-                                tileset.get_tile_height() * height),
-                  "Lazarus");
-}
-
 void Window::set_tile(const Position2D &pos, int tile_id, Color color)
 {
-    if (tile_id < 0 || tile_id >= tileset.get_num_tiles())
+    if (!tileset)
+        return;
+
+    if (tile_id < 0 || tile_id >= tileset->get_num_tiles())
     {
         // Tile ID not valid
         return;
     }
-    sf::Sprite &sprite = tileset.get_tile(tile_id);
-    sprite.setPosition(pos.x * tileset.get_tile_width(), pos.y * tileset.get_tile_height());
+    sf::Sprite &sprite = tileset->get_tile(tile_id);
+    sprite.setPosition(pos.x * tileset->get_tile_width(), pos.y * tileset->get_tile_height());
     sprite.setColor(color);
     window.draw(sprite);
     return;
