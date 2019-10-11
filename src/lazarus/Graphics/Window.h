@@ -34,8 +34,14 @@ public:
      * Initializes the window with the given dimensions in tiles
      * and background color.
      */
-    void init(Tileset &tileset, int width, int height, std::string title,
-              Color bg_color = Color::Black);
+    void init(Tileset &tileset, int width, int height,
+              std::string title, Color bg_color = Color::Black);
+
+    /**
+     * Returns whether the window has been initialized with a valid
+     * tileset and dimensions.
+     */
+    bool is_initialized() const;
 
     /**
      * Returns the width in tiles of the window.
@@ -96,5 +102,7 @@ private:
     Tileset *tileset;
     // Background color for when a tile is not rendered
     Color bg_color;
+    // Whether the window has been initialized with correct values
+    bool initialized;
 };
 }  // namespace lz

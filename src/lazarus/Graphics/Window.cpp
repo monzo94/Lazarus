@@ -7,6 +7,7 @@ Window::Window()
     , height(0)
     , tileset(nullptr)
     , bg_color(Color::Black)
+    , initialized(false)
 {
 }
 
@@ -22,7 +23,14 @@ void Window::init(Tileset &tileset_, int width_,
         window.create(sf::VideoMode(tileset->get_tile_width() * width,
                                     tileset->get_tile_height() * height),
                       title);
+        
+        initialized = true;
     }
+}
+
+bool Window::is_initialized() const
+{
+    return initialized;
 }
 
 int Window::get_width() const
