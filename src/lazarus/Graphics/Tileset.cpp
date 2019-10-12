@@ -95,5 +95,7 @@ sf::Sprite &Tileset::get_tile(int id)
 
 sf::Sprite &Tileset::get_tile(int x, int y)
 {
+    if (!is_loaded())
+        throw __lz::LazarusException("No tileset loaded");
     return get_tile(x + y * texture_width / tile_width);
 }
