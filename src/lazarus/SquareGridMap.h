@@ -62,6 +62,18 @@ public:
     SquareGridMap(unsigned long width, unsigned long height, bool diagonals=false);
 
     /**
+     * Constructs a new map from the given prefab.
+     * 
+     * @param prefab Matrix representing a map, where a tile with 0 is a wall
+     * and everything else is floor. The dimensions of the new map created
+     * will coincide with the dimensions of the matrix. If the dimensions of
+     * the matrix are not consistent (rows have different length), they will
+     * be filled with walls to match the longest row.
+     * @param diagonals Whether or not to consider diagonals as adjacent tiles.
+     */
+    SquareGridMap(const std::vector<std::vector<int>> &prefab, bool diagonals=false);
+
+    /**
      * @return The width of the map.
      */
     unsigned long get_width() const;

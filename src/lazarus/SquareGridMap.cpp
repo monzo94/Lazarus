@@ -48,6 +48,37 @@ SquareGridMap::SquareGridMap(unsigned long width, unsigned long height, bool dia
         throw __lz::LazarusException("SquareGridMap width and height must be positive.");
 }
 
+SquareGridMap::SquareGridMap(const std::vector<std::vector<int>> &prefab, bool diagonals)
+    : diagonals(diagonals)
+{
+    // Get dimensions
+    height = prefab.size();
+    width = 0;
+    for (auto row : prefab)
+        if (row.size() > width)
+            width = row.size();
+    
+    if (width == 0 || height == 0)
+        throw __lz::LazarusException("SquareGridMap width and height must be positive.");
+
+    // Generate map from prefab
+    // Tiles equal to 0 are walls (non-walkable, non-transparent)
+    // The rest is walkable (with cost 1) and transparent
+    costs = std::vector<float>(width * height, -1.);
+    transparencies = std::vector<bool>(width * height, false);
+    for (long y = 0; y < height; ++y)
+    {
+        for (long x = 0; x < width; ++x)
+        {
+            if (x < prefab[y].size() && prefab[y][x] != 0)
+            {
+                set_walkable({x, y}, true);
+                set_transparency({x, y}, true);
+            }
+        }
+    }
+}
+
 unsigned long SquareGridMap::get_width() const
 {
     return width;

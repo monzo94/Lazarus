@@ -167,41 +167,22 @@ TEST_CASE("map operations")
 
 TEST_CASE("neighbours")
 {
-    const int width{5};
-    const int height{5};
-    SquareGridMap map(width, height);
-    SquareGridMap map_with_diagonals(width, height, true);
-
     // Make the following hard-coded map:
     // ...#.
     // .#..#
     // ###.#
     // ..#..
     // ....#
-    std::vector<Position2D> walkable_tiles{
-        Position2D(0, 0),
-        Position2D(1, 0),
-        Position2D(2, 0),
-        Position2D(0, 0),
-        Position2D(4, 0),
-        Position2D(0, 1),
-        Position2D(2, 1),
-        Position2D(3, 1),
-        Position2D(3, 2),
-        Position2D(0, 3),
-        Position2D(1, 3),
-        Position2D(3, 3),
-        Position2D(4, 3),
-        Position2D(0, 4),
-        Position2D(1, 4),
-        Position2D(2, 4),
-        Position2D(3, 4)
+    std::vector<std::vector<int>> prefab{
+        {1,1,1,0,1},
+        {1,0,1,1,0},
+        {0,0,0,1,0},
+        {1,1,0,1,1},
+        {1,1,1,1,0},
     };
-    for (auto pos : walkable_tiles)
-    {
-        map.set_walkable(pos, true);
-        map_with_diagonals.set_walkable(pos, true);
-    }
+    SquareGridMap map(prefab);
+    SquareGridMap map_with_diagonals(prefab, true);
+
     SECTION("neighbours of walkable corner/border tiles for map without diagonals")
     {
         // Top-left corner

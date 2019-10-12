@@ -3,8 +3,6 @@
 #include <lazarus/Graphics.h>
 #include <lazarus/common.h>
 
-using namespace Catch::literals;
-
 using namespace lz;
 
 TEST_CASE("tileset loading")
