@@ -105,11 +105,15 @@ public:
     void emit(const EventType& event);
 
     /**
-     * Adds an updateable object to the engine.
+     * Adds a new updateable object to the engine.
      * 
      * The update method on this object will be called when the engine is updated.
+     * 
+     * If an updateable of the given type already exists in the engine, it will
+     * not do anything.
      */
-    void register_updateable(Updateable* updateable);
+    template <typename Type>
+    void add_updateable();
 
     /**
      * Updates all the updateable objects in the engine.
@@ -160,7 +164,7 @@ private:
 
 private:
     std::unordered_map<Identifier, std::shared_ptr<Entity>> entities;
-    std::vector<Updateable*> updateables;
+    std::vector<std::shared_ptr<Updateable>> updateables;
     // Maps event type index -> list of event listeners for that event type
     std::unordered_map<std::type_index,
                        std::vector<std::shared_ptr<__lz::BaseEventListener>>> subscribers;
@@ -261,6 +265,19 @@ void ECSEngine::emit(const EventType& event)
             listener->receive(*this, event);
         }
     }
+}
+
+// TODO: Add priority to updateables
+template <typename Type>
+void ECSEngine::add_updateable()
+{
+    // Check if it already exists
+    for (auto updateable : updateables)
+    {
+        if (std::dynamic_pointer_cast<Type>(updateable))
+            return;  // Updateable already exists
+    }
+    updateables.emplace_back(new Type);
 }
 
 template <typename System, typename EventType>

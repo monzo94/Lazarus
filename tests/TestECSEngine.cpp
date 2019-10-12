@@ -212,7 +212,7 @@ TEST_CASE("updateable management")
     }
     SECTION("update with subscribers")
     {
-        engine.register_updateable(&system);
+        engine.add_updateable<TestSystem>();
         engine.update();
         REQUIRE(x == 1);
     }
