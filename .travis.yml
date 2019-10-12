@@ -22,7 +22,6 @@ addons:
       - libglu1-mesa-dev
       - freeglut3-dev
       - mesa-common-dev
-      - xvfb
     sources: &sources
       - llvm-toolchain-precise-3.8
       - ubuntu-toolchain-r-test
@@ -32,8 +31,6 @@ os: linux
 
 install:
   - scripts/sfml.sh
-  - export DISPLAY=':99.0'
-  - Xvfb :00 -screen 0 1024x768x24 > /dev/null 2>&1 &
 
 env:
   - COMMAND="scripts/build.sh" COMPILER_NAME=gcc CXX=g++-8 CC=gcc-8 ENV=tests

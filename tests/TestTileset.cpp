@@ -19,13 +19,6 @@ TEST_CASE("tileset loading")
         REQUIRE_THROWS_AS(tileset.get_tile(0, 0),
                           __lz::LazarusException);
     }
-    SECTION("loading correct tileset")
-    {
-        REQUIRE_NOTHROW(tileset.load("tests/dejavu_12x12.png"));
-        REQUIRE(tileset.get_tile_width() == 12);
-        REQUIRE(tileset.get_tile_height() == 12);
-        REQUIRE(tileset.get_num_tiles() == 32 * 8);
-    }
     SECTION("loading incorrect tileset")
     {
         // Non existent tileset
@@ -33,9 +26,6 @@ TEST_CASE("tileset loading")
                           __lz::LazarusException);
         // Tileset with incorrect name
         REQUIRE_THROWS_AS(tileset.load("tests/dejavu12x12.png"),
-                          __lz::LazarusException);
-        // Tileset with incorrect dimensions
-        REQUIRE_THROWS_AS(tileset.load("tests/incorrect_12x12.png"),
                           __lz::LazarusException);
     }
 }
