@@ -5,6 +5,9 @@
 
 using namespace lz;
 
+// Global variable to test systems
+int x = 0;
+
 struct TestEvent
 {
     int num;
@@ -35,15 +38,15 @@ class TestSystem : public Updateable, public EventListener<TestEvent>
 public:
     virtual void update(ECSEngine& engine)
     {
+        // Update global variable
         ++x;
     }
 
     virtual void receive(ECSEngine& engine, const TestEvent& event)
     {
+        // Update global variable
         x += event.num;
     }
-
-    int x = 0;
 };
 
 void addNumBy10(Entity* ent, TestComponent* comp)
@@ -164,35 +167,36 @@ TEST_CASE("entity management")
 TEST_CASE("event management")
 {
     ECSEngine engine;
-    TestSystem system;
     TestEvent event{10};
+    x = 0;
     SECTION("event listener subscription/unsubscription")
     {
         // System is not subscribed yet
-        REQUIRE_THROWS_AS(engine.unsubscribe<TestEvent>(&system),
-                          __lz::LazarusException);
-        // Subscribe system
-        REQUIRE_NOTHROW(engine.subscribe<TestEvent>(&system));
-        // Try to unsubscribe another similar system
-        TestSystem other;
-        REQUIRE_THROWS_AS(engine.unsubscribe<TestEvent>(&other),
-                          __lz::LazarusException);
+        REQUIRE_NOTHROW(engine.delete_system<TestSystem>());
+        // Add system
+        REQUIRE_NOTHROW(engine.add_system<TestSystem, TestEvent>());
+        // Try to add another similar system
+        REQUIRE_NOTHROW(engine.add_system<TestSystem, TestEvent>());
         // Unsubscribe original system
-        REQUIRE_NOTHROW(engine.unsubscribe<TestEvent>(&system));
+        REQUIRE_NOTHROW(engine.delete_system<TestSystem>());
     }
     SECTION("emitting and receiving events from the engine without subscribers")
     {
-        REQUIRE(system.x == 0);
         // Emit without any subscribers
         engine.emit(event);
-        REQUIRE(system.x == 0);
+        REQUIRE(x == 0);
     }
     SECTION("emitting and receiving events from the engine with subscribers")
     {
         // Emit with subscribers
-        REQUIRE_NOTHROW(engine.subscribe<TestEvent>(&system));
+        REQUIRE_NOTHROW(engine.add_system<TestSystem, TestEvent>());
         engine.emit(event);
-        REQUIRE(system.x == 10);
+        REQUIRE(x == 10);
+        // Adding more of the same system to the same event type will not create a new system
+        REQUIRE_NOTHROW(engine.add_system<TestSystem, TestEvent>());
+        REQUIRE_NOTHROW(engine.add_system<TestSystem, TestEvent>());
+        engine.emit(event);
+        REQUIRE(x == 20);
     }
 }
 
@@ -200,18 +204,17 @@ TEST_CASE("updateable management")
 {
     ECSEngine engine;
     TestSystem system;
+    x = 0;
     SECTION("update without subscribers")
     {
-        REQUIRE(system.x == 0);
         engine.update();
-        REQUIRE(system.x == 0);
+        REQUIRE(x == 0);
     }
     SECTION("update with subscribers")
     {
-        REQUIRE(system.x == 0);
         engine.register_updateable(&system);
         engine.update();
-        REQUIRE(system.x == 1);
+        REQUIRE(x == 1);
     }
 }
 

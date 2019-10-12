@@ -73,22 +73,30 @@ public:
         bool include_deleted=false);
 
     /**
-     * Subscribes the event listener to the list of listeners of that event type.
+     * Registers a system to listen to certain event types.
+     * 
+     * The system must subclass an event listener of each of the event
+     * types passed, and therefore must implement each receive method
+     * for each of the event types.
      * 
      * When an event of type EventType is emitted, it will be passed to all the
      * event listeners subscribed to this event type, by calling their receive
      * method.
      * 
+     * If a system of the specified type already exists in the engine, it
+     * will be set to also listen to the new event types.
+     * 
      * @see EventListener
      */
-    template <typename EventType>
-    void subscribe(EventListener<EventType>* event_listener);
+    template <typename System, typename... EventTypes>
+    void add_system();
 
     /**
-     * Unsubscribes the event listener from the list of listeners of that event type.
+     * Deletes a system from the engine, making it stop receiveng any events
+     * of the event type it was listening.
      */
-    template <typename EventType>
-    void unsubscribe(EventListener<EventType>* event_listener);
+    template <typename System>
+    void delete_system();
 
     /**
      * Emit an event to all listeners of that type of event.
@@ -116,12 +124,46 @@ private:
      */
     void garbage_collect();
 
+    /**
+     * Checks that the system is a listener of the event type.
+     */
+    template <typename System, typename EventType>
+    static bool verify_listener();
+
+    /**
+     * Checks that the system is a listener of all the event types.
+     */
+    template <typename System, typename T, typename V,typename... Types>
+    static bool verify_listener();
+
+    /**
+     * Searches for the system in the list of subscribers to events,
+     * and returns a pointer to it if it is found, or a nullptr if it
+     * does not exist in the engine.
+     */
+    template <typename System>
+    std::shared_ptr<System> find_system();
+
+    /**
+     * Checks if a system of the given type is already listening
+     * to a certain event type.
+     */
+    template <typename System, typename EventType>
+    bool is_listener() const;
+
+    /**
+     * Checks if a system of the given type id is already listening
+     * to a certain event type.
+     */
+    template <typename System>
+    bool is_listener(std::type_index type_id) const;
+
 private:
     std::unordered_map<Identifier, std::shared_ptr<Entity>> entities;
     std::vector<Updateable*> updateables;
     // Maps event type index -> list of event listeners for that event type
     std::unordered_map<std::type_index,
-                       std::vector<__lz::BaseEventListener*>> subscribers;
+                       std::vector<std::shared_ptr<__lz::BaseEventListener>>> subscribers;
 };
 
 template <typename... Types>
@@ -153,48 +195,56 @@ void ECSEngine::apply_to_each(
     }
 }
 
-// TODO: Add subscribe method which creates the system internally
-template <typename EventType>
-void ECSEngine::subscribe(EventListener<EventType>* event_listener)
+template <typename System, typename... EventTypes>
+void ECSEngine::add_system()
 {
-    std::type_index typeId = __lz::get_type_index<EventType>();
-    auto found = subscribers.find(typeId);
-    if (found == subscribers.end())
+    if (!verify_listener<System, EventTypes...>())
+        throw __lz::LazarusException("System is not a listener to some of the event types");
+
+    // Put all event types in a vector
+    std::vector<std::type_index> types{__lz::get_type_index<EventTypes>()...};
+
+    // Search for the system, and if it exists, use it
+    std::shared_ptr<System> new_system = find_system<System>();
+    // If the system does not exist, create a new one
+    if (!new_system)
+        new_system = std::make_shared<System>();
+
+    for (std::type_index type_id : types)
     {
-        // No subscribers to this type of event yet, create vector
-        std::vector<__lz::BaseEventListener*> vec;
-        vec.push_back(event_listener);
-        subscribers[typeId] = vec;
-    }
-    else
-    {
-        // There already exists a list of subscribers to this event type
-        found->second.push_back(event_listener);
+        auto found = subscribers.find(type_id);
+        if (found == subscribers.end())
+        {
+            // No subscribers to this type of event yet, create vector
+            std::vector<std::shared_ptr<__lz::BaseEventListener>> vec;
+            vec.push_back(new_system);
+            subscribers[type_id] = vec;
+        }
+        else
+        {
+            // There already exists a list of subscribers to this event type
+            if (!is_listener<System>(type_id))
+                found->second.push_back(new_system);
+        }
     }
 }
 
-template <typename EventType>
-void ECSEngine::unsubscribe(EventListener<EventType>* event_listener)
+template <typename System>
+void ECSEngine::delete_system()
 {
-    auto found = subscribers.find(__lz::get_type_index<EventType>());
-    if (found != subscribers.end())
+    // Remove the system from all the event listeners
+    for (auto &pair : subscribers)
     {
-        auto event_listeners = found->second;
-        for (auto it = event_listeners.begin(); it != event_listeners.end(); ++it)
+        auto &systems = pair.second;
+        for (auto it = systems.begin(); it != systems.end(); ++it)
         {
-            if (*it == event_listener)
+            if (dynamic_cast<System*>(it->get()))
             {
-                // System found, remove it from the subscriber list
-                event_listeners.erase(it);
-                return;
+                systems.erase(it);
+                break;
             }
         }
     }
-    // System was not found
-    std::stringstream msg;
-    msg << "ECS engine was not subscribed to the event ";
-    msg << typeid(EventType).name();
-    throw __lz::LazarusException(msg.str());
 }
 
 template <typename EventType>
@@ -207,9 +257,62 @@ void ECSEngine::emit(const EventType& event)
         auto event_listeners = found->second;
         for (auto it = event_listeners.begin(); it != event_listeners.end(); ++it)
         {
-            auto* listener = dynamic_cast<EventListener<EventType>*>(*it);
+            auto* listener = dynamic_cast<EventListener<EventType>*>(it->get());
             listener->receive(*this, event);
         }
     }
+}
+
+template <typename System, typename EventType>
+bool ECSEngine::verify_listener()
+{
+    return std::is_base_of<EventListener<EventType>, System>::value;
+}
+
+template <typename System, typename T, typename V,typename... Types>
+bool ECSEngine::verify_listener()
+{
+    return verify_listener<System, T>() && verify_listener<System, V, Types...>();
+}
+
+template <typename System>
+std::shared_ptr<System> ECSEngine::find_system()
+{
+    for (auto &pair : subscribers)
+    {
+        auto &systems = pair.second;
+        for (auto it = systems.begin(); it != systems.end(); ++it)
+        {
+            std::shared_ptr<System> sp_system = std::dynamic_pointer_cast<System>(*it);
+            if (sp_system)
+                return sp_system;
+        }
+    }
+    // System not found, return empty shared pointer
+    return std::shared_ptr<System>();
+}
+
+template <typename System, typename EventType>
+bool ECSEngine::is_listener() const
+{
+    std::type_index type_id = __lz::get_type_index<EventType>();
+    return is_listener<System>(type_id);
+}
+
+template <typename System>
+bool ECSEngine::is_listener(std::type_index type_id) const
+{
+    auto found = subscribers.find(type_id);
+    if (found != subscribers.end())
+    {
+        // Search for this system in the listeners list 
+        auto listeners = found->second;
+        for (auto it = listeners.begin(); it != listeners.end(); ++it)
+        {
+            if (std::dynamic_pointer_cast<System>(*it))
+                return true;  // System found
+        }
+    }
+    return false;
 }
 }  // namespace lz
