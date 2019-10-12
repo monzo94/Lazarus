@@ -13,6 +13,11 @@ struct TestEvent
     int num;
 };
 
+struct TestEvent2
+{
+    int num;
+};
+
 struct TestComponent
 {
     TestComponent(int num)
@@ -33,7 +38,7 @@ struct TestComponent2
     int num;
 };
 
-class TestSystem : public Updateable, public EventListener<TestEvent>
+class TestSystem : public Updateable, public EventListener<TestEvent>, public EventListener<TestEvent2>
 {
 public:
     virtual void update(ECSEngine& engine)
@@ -46,6 +51,12 @@ public:
     {
         // Update global variable
         x += event.num;
+    }
+
+    virtual void receive(ECSEngine& engine, const TestEvent2& event)
+    {
+        // Update global variable
+        x -= event.num;
     }
 };
 
@@ -168,6 +179,7 @@ TEST_CASE("event management")
 {
     ECSEngine engine;
     TestEvent event{10};
+    TestEvent2 event2{5};
     x = 0;
     SECTION("event listener subscription/unsubscription")
     {
@@ -177,6 +189,8 @@ TEST_CASE("event management")
         REQUIRE_NOTHROW(engine.add_system<TestSystem, TestEvent>());
         // Try to add another similar system
         REQUIRE_NOTHROW(engine.add_system<TestSystem, TestEvent>());
+        // Subscribe system to a new event type
+        REQUIRE_NOTHROW(engine.add_system<TestSystem, TestEvent2>());
         // Unsubscribe original system
         REQUIRE_NOTHROW(engine.delete_system<TestSystem>());
     }
@@ -197,6 +211,30 @@ TEST_CASE("event management")
         REQUIRE_NOTHROW(engine.add_system<TestSystem, TestEvent>());
         engine.emit(event);
         REQUIRE(x == 20);
+    }
+    SECTION("subscribing system to multiple event types at the same type")
+    {
+        REQUIRE_NOTHROW(engine.add_system<TestSystem, TestEvent, TestEvent2>());
+        engine.emit(event);
+        REQUIRE(x == 10);
+        engine.emit(event2);
+        REQUIRE(x == 5);
+    }
+    SECTION("subscribing system to multiple event types one at a time")
+    {
+        REQUIRE_NOTHROW(engine.add_system<TestSystem, TestEvent>());
+        REQUIRE_NOTHROW(engine.add_system<TestSystem, TestEvent2>());
+        engine.emit(event);
+        REQUIRE(x == 10);
+        engine.emit(event2);
+        REQUIRE(x == 5);
+    }
+    SECTION("deleting systems")
+    {
+        REQUIRE_NOTHROW(engine.add_system<TestSystem, TestEvent>());
+        REQUIRE_NOTHROW(engine.delete_system<TestSystem>());
+        engine.emit(event);
+        REQUIRE(x == 0);
     }
 }
 

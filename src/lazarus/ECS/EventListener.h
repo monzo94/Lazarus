@@ -29,7 +29,7 @@ class ECSEngine;
  * @see BaseSystem
  */
 template <typename EventType>
-class EventListener : public __lz::BaseEventListener
+class EventListener : public virtual __lz::BaseEventListener
 {
 public:
     // Add virtual destructor to make class polymorphic
