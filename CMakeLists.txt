@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.0.0)
 
 # Use C++17
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Enable debug symbols by default
 # Must be done before project() statement
@@ -31,12 +32,12 @@ if(WIN32)
 endif()
 
 # SFML
-find_package(SFML 2.5 COMPONENTS graphics audio REQUIRED)
+find_package(SFML 2.5 COMPONENTS graphics window audio REQUIRED)
 if(SFML_FOUND)
     # Only the highest level is needed, other dependencies (windows, system, etc)
     # are automatically resolved
     target_include_directories(${LIBRARY_NAME} PRIVATE ${SFML_INCLUDE_DIR})
-    target_link_libraries(${LIBRARY_NAME} sfml-graphics)
+    target_link_libraries(${LIBRARY_NAME} sfml-graphics stdc++fs)
 else()
     message(FATAL_ERROR "SFML was not found.")
 endif()
