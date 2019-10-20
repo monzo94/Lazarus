@@ -20,7 +20,7 @@ using sf::Event;
  * increasing to the right and the y-axis increasing
  * when going down.
  */
-class Window
+class Window : public sf::RenderWindow
 {
 public:
     // TODO: Layering/subwindow system
@@ -84,34 +84,14 @@ public:
     void render();
 
     /**
-     * Return whether the window is open.
-     */
-    bool is_open() const;
-
-    /**
-     * Closes the window.
-     */
-    void close();
-
-    /**
      * Return the currently loaded tileset, or a nullptr if
      * no tileset is loaded.
      */
     const Tileset *get_tileset() const;
 
-    /**
-     * Gets the next even in3 the queue.
-     * 
-     * @param event Reference in which the next event
-     * will be stored.
-     */
-    bool poll_event(Event &event);
-
 private:
     // Dimensions in tiles of the window
     int width, height;
-    // The window itself
-    sf::RenderWindow window;
     // The currently loaded tileset
     Tileset *tileset;
     // The currently loaded font

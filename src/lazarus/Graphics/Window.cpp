@@ -21,7 +21,7 @@ void Window::init(Tileset &tileset_, int width_,
     if (tileset->is_loaded() && width > 0 && height > 0)
     {
         unsigned tile_size = tileset->get_tile_size();
-        window.create(sf::VideoMode(tile_size * width, tile_size * height), title);
+        create(sf::VideoMode(tile_size * width, tile_size * height), title);
         initialized = true;
     }
 }
@@ -61,33 +61,18 @@ void Window::set_tile(const Position2D &pos, int tile_id, Color color)
     unsigned tile_size = tileset->get_tile_size();
     sprite.setPosition(pos.x * tile_size, pos.y * tile_size);
     sprite.setColor(color);
-    window.draw(sprite);
+    draw(sprite);
     return;
 }
 
 void Window::render()
 {
     // Display contents and clear for future draws
-    window.display();
-    window.clear(bg_color);
-}
-
-bool Window::is_open() const
-{
-    return window.isOpen();
-}
-
-void Window::close()
-{
-    window.close();
+    display();
+    clear(bg_color);
 }
 
 const Tileset *Window::get_tileset() const
 {
     return tileset;
-}
-
-bool Window::poll_event(Event &event)
-{
-    return window.pollEvent(event);
 }
