@@ -20,12 +20,16 @@ void Window::init(Tileset &tileset_, int width_,
     bg_color = bg_color_;
     if (tileset->is_loaded() && width > 0 && height > 0)
     {
-        window.create(sf::VideoMode(tileset->get_tile_width() * width,
-                                    tileset->get_tile_height() * height),
-                      title);
-        
+        unsigned tile_size = tileset->get_tile_size();
+        window.create(sf::VideoMode(tile_size * width, tile_size * height), title);
         initialized = true;
     }
+}
+
+void Window::load_font(const std::string &path)
+{
+    if (!font.loadFromFile(path))
+        throw __lz::LazarusException("Could not load font at path: " + path);
 }
 
 bool Window::is_initialized() const
@@ -54,7 +58,8 @@ void Window::set_tile(const Position2D &pos, int tile_id, Color color)
         return;
     }
     sf::Sprite &sprite = tileset->get_tile(tile_id);
-    sprite.setPosition(pos.x * tileset->get_tile_width(), pos.y * tileset->get_tile_height());
+    unsigned tile_size = tileset->get_tile_size();
+    sprite.setPosition(pos.x * tile_size, pos.y * tile_size);
     sprite.setColor(color);
     window.draw(sprite);
     return;
@@ -75,6 +80,11 @@ bool Window::is_open() const
 void Window::close()
 {
     window.close();
+}
+
+const Tileset *Window::get_tileset() const
+{
+    return tileset;
 }
 
 bool Window::poll_event(Event &event)

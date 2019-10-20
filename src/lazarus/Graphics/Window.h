@@ -1,5 +1,6 @@
 #pragma once
 
+#include <lazarus/common.h>
 #include <lazarus/Graphics/Tileset.h>
 #include <lazarus/SquareGridMap.h>
 
@@ -36,6 +37,13 @@ public:
      */
     void init(Tileset &tileset, int width, int height,
               std::string title, Color bg_color = Color::Black);
+
+    /**
+     * Loads the font at the given path.
+     * 
+     * If the loading fails, an exception will be thrown.
+     */
+    void load_font(const std::string &path);
 
     /**
      * Returns whether the window has been initialized with a valid
@@ -86,7 +94,13 @@ public:
     void close();
 
     /**
-     * Gets the next even in the queue.
+     * Return the currently loaded tileset, or a nullptr if
+     * no tileset is loaded.
+     */
+    const Tileset *get_tileset() const;
+
+    /**
+     * Gets the next even in3 the queue.
      * 
      * @param event Reference in which the next event
      * will be stored.
@@ -98,8 +112,10 @@ private:
     int width, height;
     // The window itself
     sf::RenderWindow window;
-    // The tileset that the window uses to draw sprites
+    // The currently loaded tileset
     Tileset *tileset;
+    // The currently loaded font
+    sf::Font font;
     // Background color for when a tile is not rendered
     Color bg_color;
     // Whether the window has been initialized with correct values

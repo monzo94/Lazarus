@@ -6,8 +6,7 @@
 using namespace lz;
 
 Tileset::Tileset()
-    : tile_width(0)
-    , tile_height(0)
+    : tile_size(0)
     , num_tiles(0)
     , texture_width(0)
     , texture_height(0)
@@ -24,14 +23,9 @@ bool Tileset::is_loaded() const
     return !tiles.empty() && !tileset_name.empty();
 }
 
-unsigned Tileset::get_tile_width() const
+unsigned Tileset::get_tile_size() const
 {
-    return tile_width;
-}
-
-unsigned Tileset::get_tile_height() const
-{
-    return tile_height;
+    return tile_size;
 }
 
 unsigned Tileset::get_num_tiles() const
@@ -50,36 +44,35 @@ void Tileset::load(const std::string &path)
         // match[0] is the total match
         // 1, 2 and 3 contain each of the groups
         tileset_name = match[1].str();
-        tile_width = std::atoi(match[2].str().c_str());
-        tile_height = std::atoi(match[3].str().c_str());
+        tile_size = std::atoi(match[2].str().c_str());
+        if (std::atoi(match[3].str().c_str()) != tile_size)
+            throw __lz::LazarusException("Tiles must be square");
     }
     else
         throw __lz::LazarusException("Texture filename is not correctly formatted");
-    
 
     // Load the image file
     if (!texture.loadFromFile(path))
-        throw __lz::LazarusException("Could not load resource at path: " + path);
+        throw __lz::LazarusException("Could not load texture at path: " + path);
 
     // Tileset's width and height has to be divisible by the tile size
-    // TODO: Allow non-square sizes
     sf::Vector2u image_size = texture.getSize();
     texture_width = image_size.x;
     texture_height = image_size.y;
-    if (texture_width % tile_width || texture_height % tile_height)
+    if (texture_width % tile_size || texture_height % tile_size)
         throw __lz::LazarusException("The tilemap has wrong dimensions: " + path);
 
     // Clear the old tileset and load the new one
-    num_tiles = texture_width * texture_height / (tile_width * tile_height);
+    num_tiles = texture_width * texture_height / (tile_size * tile_size);
     tiles.clear();
     // Assign an id to each tile in reading order
     for (int id = 0; id < num_tiles; ++id)
     {
-        int col = id % (texture_width / tile_width);
-        int row = id / (texture_width / tile_height);
+        int col = id % (texture_width / tile_size);
+        int row = id / (texture_width / tile_size);
 
-        sf::IntRect sprite_rect(col * tile_width, row * tile_height,
-                                tile_width, tile_height);
+        sf::IntRect sprite_rect(col * tile_size, row * tile_size,
+                                tile_size, tile_size);
         tiles.emplace_back(texture, sprite_rect);
     }
 }
@@ -97,5 +90,5 @@ sf::Sprite &Tileset::get_tile(int x, int y)
 {
     if (!is_loaded())
         throw __lz::LazarusException("No tileset loaded");
-    return get_tile(x + y * texture_width / tile_width);
+    return get_tile(x + y * texture_width / tile_size);
 }

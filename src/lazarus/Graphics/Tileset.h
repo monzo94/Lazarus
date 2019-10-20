@@ -43,14 +43,9 @@ public:
     bool is_loaded() const;
 
     /**
-     * Return the width of each tile in pixels.
+     * Return the size of each tile in pixels.
      */
-    unsigned get_tile_width() const;
-
-    /**
-     * Return the height of each tile in pixels.
-     */
-    unsigned get_tile_height() const;
+    unsigned get_tile_size() const;
 
     /**
      * Get the total number of tiles loaded from the texture.
@@ -74,8 +69,8 @@ private:
     unsigned texture_width, texture_height;
     std::string tileset_name;
 
-    // Width and height per tile of the currently loaded texture
-    unsigned tile_width, tile_height;
+    // Size per tile of the currently loaded texture (tiles are square)
+    unsigned tile_size;
 
     // Number of tiles in the tileset
     unsigned num_tiles;
