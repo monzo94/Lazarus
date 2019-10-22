@@ -65,6 +65,21 @@ void Window::set_tile(const Position2D &pos, int tile_id, Color color)
     return;
 }
 
+void Window::draw_text(std::string msg, int x, int y, int size_px, Color color)
+{
+    sf::Text text(msg, font, size_px);
+    text.setFillColor(color);
+    text.setPosition(x, y);
+    draw(text);
+}
+
+void Window::draw_text(sf::Text &text, int x, int y)
+{
+    text.setFont(font);
+    text.setPosition(x, y);
+    draw(text);
+}
+
 void Window::render()
 {
     // Display contents and clear for future draws

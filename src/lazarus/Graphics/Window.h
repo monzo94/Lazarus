@@ -77,6 +77,9 @@ public:
      */
     void set_tile(const Position2D &pos, int tile_id, Color color=Color::White);
 
+    void draw_text(std::string msg, int x, int y, int size_px = 24, Color color = Color::White);
+    void draw_text(sf::Text &text, int x, int y);
+
     /**
      * Display the current contents of the window and
      * flush the window buffer.
