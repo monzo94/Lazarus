@@ -2,6 +2,8 @@
 
 using namespace lz;
 
+constexpr unsigned FRAMERATE_LIMIT = 60;
+
 Window::Window()
     : width(0)
     , height(0)
@@ -22,6 +24,7 @@ void Window::init(Tileset &tileset_, int width_,
     {
         unsigned tile_size = tileset->get_tile_size();
         create(sf::VideoMode(tile_size * width, tile_size * height), title);
+        setFramerateLimit(FRAMERATE_LIMIT);
         initialized = true;
     }
 }
