@@ -1,9 +1,8 @@
 #include <lazarus/SquareGridMap.h>
+#include <lazarus/common.h>
 
 #include <array>
 #include <sstream>
-
-#include <lazarus/common.h>
 
 using namespace lz;
 
@@ -57,7 +56,7 @@ SquareGridMap::SquareGridMap(const std::vector<std::vector<int>> &prefab, bool d
     for (auto row : prefab)
         if (row.size() > width)
             width = row.size();
-    
+
     if (width == 0 || height == 0)
         throw __lz::LazarusException("SquareGridMap width and height must be positive.");
 
@@ -134,8 +133,8 @@ float SquareGridMap::get_cost(const Position2D &pos) const
     if (!is_walkable(pos))
     {
         std::stringstream msg;
-        msg << "Tried to get cost of unwalkable tile at position ("
-            << pos.x << ", " << pos.y << ").";
+        msg << "Tried to get cost of unwalkable tile at position (" << pos.x << ", "
+            << pos.y << ").";
         throw __lz::LazarusException(msg.str());
     }
 
@@ -156,11 +155,10 @@ std::vector<Position2D> SquareGridMap::neighbours(const Position2D &pos) const
     std::vector<Position2D> result;
     long x = pos.x, y = pos.y;
 
-    std::array<Position2D, 4> neighbour_positions{
-        Position2D(x - 1, y),
-        Position2D(x + 1, y),
-        Position2D(x, y - 1),
-        Position2D(x, y + 1)};
+    std::array<Position2D, 4> neighbour_positions{Position2D(x - 1, y),
+                                                  Position2D(x + 1, y),
+                                                  Position2D(x, y - 1),
+                                                  Position2D(x, y + 1)};
 
     for (Position2D neighbour : neighbour_positions)
     {
@@ -170,11 +168,10 @@ std::vector<Position2D> SquareGridMap::neighbours(const Position2D &pos) const
 
     if (diagonals)
     {
-        std::array<Position2D, 4> diagonal_positions{
-            Position2D(x - 1, y - 1),
-            Position2D(x + 1, y + 1),
-            Position2D(x + 1, y - 1),
-            Position2D(x - 1, y + 1)};
+        std::array<Position2D, 4> diagonal_positions{Position2D(x - 1, y - 1),
+                                                     Position2D(x + 1, y + 1),
+                                                     Position2D(x + 1, y - 1),
+                                                     Position2D(x - 1, y + 1)};
 
         for (Position2D neighbour : diagonal_positions)
         {

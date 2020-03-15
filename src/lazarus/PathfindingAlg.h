@@ -1,13 +1,13 @@
 #pragma once
 
+#include <lazarus/Heuristics.h>
+#include <lazarus/common.h>
+
 #include <algorithm>
 #include <map>
 #include <queue>
 #include <set>
 #include <vector>
-
-#include <lazarus/common.h>
-#include <lazarus/Heuristics.h>
 
 namespace __lz  // Meant for internal use only
 {
@@ -30,7 +30,7 @@ enum class SearchState
 
 /**
  * Abstract class for heuristic search pathfinding algorithms.
- * 
+ *
  * @tparam Position The type of position. Must implement the operators `==`, `!=` and `<`.
  * @tparam Map The type of map that the algorithm will use. The requirements
  * depend on the implementation.
@@ -41,7 +41,7 @@ class PathfindingAlg
 public:
     /**
      * Constructs a new search algorithm, initializing it with the given data.
-     * 
+     *
      * @param map Reference to the map with which the algorithm will work.
      * @param origin Reference to the origin node.
      * @param goal Reference to the goal node.
@@ -62,7 +62,7 @@ public:
 
     /**
      * Initializes the algorithm with the given data.
-     * 
+     *
      * Sets the origin and goal nodes, and optionally, the heuristic to use.
      */
     virtual void init(const Position &_origin,
@@ -75,21 +75,24 @@ public:
         state = SearchState::READY;
     }
 
-    SearchState get_state() const { return state; }
+    SearchState get_state() const
+    {
+        return state;
+    }
 
     /**
      * Executes a search with previously initialized data.
-     * 
-     * The algorithm must be ready for a search, meaning that it must have been initialized
-     * with the @ref init(const Position &origin, const Position &goal,
+     *
+     * The algorithm must be ready for a search, meaning that it must have been
+     * initialized with the @ref init(const Position &origin, const Position &goal,
      * Heuristic<Position> heuristic) method.
-     * 
+     *
      * The algorithm will be executed until completion, that is, until a path is found,
      * or until the algorithm cannot continue because a path does not exist.
-     * 
+     *
      * If the search was successful, the final path will be constructed using the
      * @ref construct_path() method.
-     * 
+     *
      * @return The search state after the execution of the algorithm. It can be either
      * `SearchState::SUCCESS` if a path was found, or `SearchState::FAILED`
      * if a path could not be found.
@@ -97,7 +100,8 @@ public:
     virtual SearchState execute()
     {
         if (state != SearchState::READY)
-            throw __lz::LazarusException("Tried to execute an uninitialized pathfinding algorithm.");
+            throw __lz::LazarusException(
+                "Tried to execute an uninitialized pathfinding algorithm.");
 
         // Clear open and closed lists
         closed_list.clear();
@@ -110,10 +114,10 @@ public:
 
         // Clear old path
         path.clear();
-        
+
         // Add origin node to the open list, with default values
         open_list.emplace(0.0f, origin);
-        
+
         // Run search algorithm until we either succeed or fail
         state = SearchState::SEARCHING;
         while (state == SearchState::SEARCHING)
@@ -128,14 +132,14 @@ public:
 
     /**
      * Initializes the algorithm with the given origin and goal nodes and executes it.
-     * 
+     *
      * The heuristic used will be the one set upon construction or by a previous call to
      * @ref init(const Position &origin, const Position &goal,
      * Heuristic<Position> heuristic).
-     * 
+     *
      * @see execute()
      */
-    virtual SearchState execute(const Position& origin, const Position& goal)
+    virtual SearchState execute(const Position &origin, const Position &goal)
     {
         init(origin, goal, heuristic);
         return execute();
@@ -143,28 +147,29 @@ public:
 
     /**
      * Gets the final path from a successful search.
-     * 
+     *
      * The path will start at the next step after the origin, and will end
      * at the goal node.
-     * 
+     *
      * @throws LazarusException If the search has not finished successfully.
-     * 
+     *
      * @return A vector with the ordered final path comnputed by the algorithm.
      */
     virtual std::vector<Position> getPath() const
     {
         if (state != SearchState::SUCCESS)
-            throw __lz::LazarusException("Trying to get path from a failed pathfinding search.");
+            throw __lz::LazarusException(
+                "Trying to get path from a failed pathfinding search.");
         return path;
     }
 
 protected:
     /**
      * Perform a search step of the pathfinding algorithm.
-     * 
+     *
      * This method is abstract, and is the method that every pathfinding algorithm needs
      * to implement to work correctly.
-     * 
+     *
      * @return The search state after the execution of the search step.
      */
     virtual SearchState search_step() = 0;
@@ -172,16 +177,17 @@ protected:
 private:
     /**
      * Reconstructs the final path from the origin to the goal nodes.
-     * 
+     *
      * The path will start at the step after the origin, and end at the goal node.
      * The constructed path will be stored in the `path` attribute from the class.
-     * 
+     *
      * @throw LazarusException If the search has not finished successfully.
      */
     void construct_path()
     {
         if (state != SearchState::SUCCESS)
-            throw __lz::LazarusException("Trying to get path from a failed pathfinding search.");
+            throw __lz::LazarusException(
+                "Trying to get path from a failed pathfinding search.");
 
         // Path starts from the next step after the origin,
         // and finishes at the goal
@@ -195,7 +201,7 @@ private:
     }
 
 protected:
-    const Map& map;
+    const Map &map;
     SearchState state;
     Position origin;
     Position goal;
@@ -206,6 +212,7 @@ protected:
     std::set<Position> closed_list;
     std::priority_queue<__lz::QueuePair<Position>,
                         std::vector<__lz::QueuePair<Position>>,
-                        std::greater<__lz::QueuePair<Position>>> open_list;
+                        std::greater<__lz::QueuePair<Position>>>
+        open_list;
 };
 }  // namespace lz

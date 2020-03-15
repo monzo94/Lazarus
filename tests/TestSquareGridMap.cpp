@@ -1,13 +1,13 @@
-#include "catch/catch.hpp"
-
 #include <lazarus/SquareGridMap.h>
 #include <lazarus/common.h>
+
+#include "catch/catch.hpp"
 
 using namespace Catch::literals;
 
 using namespace lz;
 
-bool position_in_vector(const std::vector<Position2D>& vec, const Position2D& pos)
+bool position_in_vector(const std::vector<Position2D> &vec, const Position2D &pos)
 {
     for (auto pos_in_vec : vec)
         if (pos.x == pos_in_vec.x && pos.y == pos_in_vec.y)
@@ -26,10 +26,8 @@ TEST_CASE("map dimensions")
     SECTION("bad dimensions")
     {
         // Setting width or height to 0 should throw an exception
-        REQUIRE_THROWS_AS(SquareGridMap(0, 5),
-                          __lz::LazarusException);
-        REQUIRE_THROWS_AS(SquareGridMap(5, 0),
-                          __lz::LazarusException);
+        REQUIRE_THROWS_AS(SquareGridMap(0, 5), __lz::LazarusException);
+        REQUIRE_THROWS_AS(SquareGridMap(5, 0), __lz::LazarusException);
     }
 }
 
@@ -63,10 +61,12 @@ TEST_CASE("map operations")
     const int width{3};
     const int height{3};
     SquareGridMap map(width, height);
-    std::vector<Position2D> out_of_bounds_positions{
-        Position2D(5, 5), Position2D(-1, 2), Position2D(0, -2),
-        Position2D(0, 3), Position2D(3, 1), Position2D(3, 3)
-    };
+    std::vector<Position2D> out_of_bounds_positions{Position2D(5, 5),
+                                                    Position2D(-1, 2),
+                                                    Position2D(0, -2),
+                                                    Position2D(0, 3),
+                                                    Position2D(3, 1),
+                                                    Position2D(3, 3)};
     Position2D tile(1, 2);
     SECTION("out of bounds positions")
     {
@@ -113,7 +113,8 @@ TEST_CASE("map operations")
         for (auto pos : out_of_bounds_positions)
         {
             REQUIRE_THROWS_AS(map.set_transparency(pos, true), __lz::LazarusException);
-            REQUIRE_THROWS_AS(map.set_transparency(pos.x, pos.y, true), __lz::LazarusException);
+            REQUIRE_THROWS_AS(map.set_transparency(pos.x, pos.y, true),
+                              __lz::LazarusException);
         }
     }
     SECTION("setting walkability of out of bounds tile throws error")
@@ -121,7 +122,8 @@ TEST_CASE("map operations")
         for (auto pos : out_of_bounds_positions)
         {
             REQUIRE_THROWS_AS(map.set_walkable(pos, true), __lz::LazarusException);
-            REQUIRE_THROWS_AS(map.set_walkable(pos.x, pos.y, true), __lz::LazarusException);
+            REQUIRE_THROWS_AS(map.set_walkable(pos.x, pos.y, true),
+                              __lz::LazarusException);
         }
     }
     SECTION("modifying the cost of a tile")
@@ -174,11 +176,11 @@ TEST_CASE("neighbours")
     // ..#..
     // ....#
     std::vector<std::vector<int>> prefab{
-        {1,1,1,0,1},
-        {1,0,1,1,0},
-        {0,0,0,1,0},
-        {1,1,0,1,1},
-        {1,1,1,1,0},
+        {1, 1, 1, 0, 1},
+        {1, 0, 1, 1, 0},
+        {0, 0, 0, 1, 0},
+        {1, 1, 0, 1, 1},
+        {1, 1, 1, 1, 0},
     };
     SquareGridMap map(prefab);
     SquareGridMap map_with_diagonals(prefab, true);

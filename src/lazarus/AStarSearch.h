@@ -6,14 +6,14 @@ namespace lz
 {
 /**
  * Implementation of the A* pathfinding algorithm.
- * 
+ *
  * The A* algorithm uses a heuristic to speed up the search of an optimal path between
  * any two given nodes.
- * 
+ *
  * The algorithm will only produce optimal paths (that is, minimal distance paths)
  * reliably if the heuristic never overestimates the actual distance of an optimal path
  * from any node to the goal node.
- * 
+ *
  * @tparam Position The type of position. Must implement the operators `==`, `!=` and `<`.
  * @tparam Map THe type of map that the algorithm will use. Must implement the methods
  * `get_cost(const Position&)` and `neighbours(const Position&)`.
@@ -24,7 +24,7 @@ class AStarSearch : public PathfindingAlg<Position, Map>
 public:
     /**
      * Initializes a new A* search algorithm with the given data.
-     * 
+     *
      * @param map Reference to the map with which the algorithm will work.
      * @param origin Reference to the origin node.
      * @param goal Reference to the goal node.
@@ -42,7 +42,7 @@ public:
 protected:
     /**
      * Perform a search step of the A* algorithm.
-     * 
+     *
      * @return The search state after the execution of the search step.
      */
     virtual SearchState search_step()
@@ -74,8 +74,8 @@ protected:
             float cost = this->cost_to_node[node] + this->map.get_cost(neighbour);
             // Also consider visited nodes which would have a
             // smaller cost from this new path
-            if (this->previous.find(neighbour) == this->previous.end()
-                || cost < this->cost_to_node[neighbour])
+            if (this->previous.find(neighbour) == this->previous.end() ||
+                cost < this->cost_to_node[neighbour])
             {
                 this->cost_to_node[neighbour] = cost;
                 this->previous.insert(std::pair<Position, Position>(neighbour, node));

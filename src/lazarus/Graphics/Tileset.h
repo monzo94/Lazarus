@@ -1,14 +1,14 @@
 #pragma once
 
+#include <SFML/Graphics.hpp>
 #include <memory>
 #include <vector>
-#include <SFML/Graphics.hpp>
 
 namespace lz
 {
 /**
  * The Tileset class manages tilesets loaded from a texture image.
- * 
+ *
  * A tileset is just the result of slicing an image in a grid pattern,
  * where each cell in the grid is a tile that is stored as an individual
  * sprite.
@@ -30,10 +30,10 @@ public:
 
     /**
      * Loads a texture from the image at the given path.
-     * 
+     *
      * The image must have a filename in the following format: name_widthxheight
      * For example, the my_texture_12x12.png has the correct format, with
-     * name my_texture, width 12 and height 12. 
+     * name my_texture, width 12 and height 12.
      */
     void load(const std::string &path);
 

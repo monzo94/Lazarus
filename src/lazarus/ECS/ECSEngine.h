@@ -1,25 +1,25 @@
 #pragma once
 
-#include <functional>
-#include <sstream>
-
 #include <lazarus/ECS/Entity.h>
 #include <lazarus/ECS/EventListener.h>
 #include <lazarus/ECS/Updateable.h>
+
+#include <functional>
+#include <sstream>
 
 namespace lz
 {
 /**
  * Main driver to work with entities, components and systems.
- * 
+ *
  * The ECSEngine class manages and puts together all the pieces of the ECS model.
  * It holds the entities and systems, and acts as a controller for the creation,
  * deletion and modification of these objects.
- * 
+ *
  * It also acts as an observer for the classes that implement the EventListener
  * interface, and is able to emit events of any type to these listeners, allowing
  * communication between systems.
- * 
+ *
  * @see Entity
  * @see BaseSystem
  * @see EventListener
@@ -30,62 +30,62 @@ public:
     /**
      * Adds a new entity to the collection and returns a pointer to it.
      */
-    Entity* add_entity();
+    Entity *add_entity();
 
     /**
      * Adds an existing entity to the collection.
-     * 
+     *
      * If the entity already exists in the collection, that is, the ID of
      * the entity is found in the collection, it does nothing.
      */
-    void add_entity(Entity& entity);
+    void add_entity(Entity &entity);
 
     /**
      * Gets a pointer to the entity from the collection with the given
      * ID, or a nullptr if an entity with such ID does not exist in the
      * collection.
      */
-    Entity* get_entity(Identifier entity_id);
+    Entity *get_entity(Identifier entity_id);
 
     /**
      * Returns a vector with the entities that have the specified
      * components.
-     * 
+     *
      * If include_deleted is set to true, entities that are marked for
      * deletion will also be included.
      */
     template <typename... Types>
-    std::vector<Entity*> entities_with_components(bool include_deleted=false);
+    std::vector<Entity *> entities_with_components(bool include_deleted = false);
 
     /**
      * Applies a function to each of the entities from the collection that have the
      * specified component types.
-     * 
+     *
      * The function passed can be a reference to an existing function, a lambda,
      * or an std::function.
-     * 
+     *
      * If include_deleted is set to true, the function will also be applied to
      * entities that are marked for deletion.
      */
     template <typename... Types>
     void apply_to_each(
-        typename std::common_type<std::function<void(Entity*, Types*...)>>::type&& func,
-        bool include_deleted=false);
+        typename std::common_type<std::function<void(Entity *, Types *...)>>::type &&func,
+        bool include_deleted = false);
 
     /**
      * Registers a system to listen to certain event types.
-     * 
+     *
      * The system must subclass an event listener of each of the event
      * types passed, and therefore must implement each receive method
      * for each of the event types.
-     * 
+     *
      * When an event of type EventType is emitted, it will be passed to all the
      * event listeners subscribed to this event type, by calling their receive
      * method.
-     * 
+     *
      * If a system of the specified type already exists in the engine, it
      * will be set to also listen to the new event types.
-     * 
+     *
      * @see EventListener
      */
     template <typename System, typename... EventTypes>
@@ -102,13 +102,13 @@ public:
      * Emit an event to all listeners of that type of event.
      */
     template <typename EventType>
-    void emit(const EventType& event);
+    void emit(const EventType &event);
 
     /**
      * Adds a new updateable object to the engine.
-     * 
+     *
      * The update method on this object will be called when the engine is updated.
-     * 
+     *
      * If an updateable of the given type already exists in the engine, it will
      * not do anything.
      */
@@ -117,7 +117,7 @@ public:
 
     /**
      * Updates all the updateable objects in the engine.
-     * 
+     *
      * Will also garbage collect deleted entities.
      */
     virtual void update();
@@ -137,7 +137,7 @@ private:
     /**
      * Checks that the system is a listener of all the event types.
      */
-    template <typename System, typename T, typename V,typename... Types>
+    template <typename System, typename T, typename V, typename... Types>
     static bool verify_listener();
 
     /**
@@ -167,29 +167,27 @@ private:
     std::vector<std::shared_ptr<Updateable>> updateables;
     // Maps event type index -> list of event listeners for that event type
     std::unordered_map<std::type_index,
-                       std::vector<std::shared_ptr<__lz::BaseEventListener>>> subscribers;
+                       std::vector<std::shared_ptr<__lz::BaseEventListener>>>
+        subscribers;
 };
 
 template <typename... Types>
-std::vector<Entity*> ECSEngine::entities_with_components(bool include_deleted)
+std::vector<Entity *> ECSEngine::entities_with_components(bool include_deleted)
 {
-    std::vector<Entity*> result;
-    apply_to_each<Types...>([&](Entity* ent, Types*... comp)
-    {
-        result.push_back(ent);
-    },
-    include_deleted);
+    std::vector<Entity *> result;
+    apply_to_each<Types...>([&](Entity *ent, Types *... comp) { result.push_back(ent); },
+                            include_deleted);
     return result;
 }
 
 template <typename... Types>
 void ECSEngine::apply_to_each(
-    typename std::common_type<std::function<void(Entity*, Types*...)>>::type&& func,
+    typename std::common_type<std::function<void(Entity *, Types *...)>>::type &&func,
     bool include_deleted)
 {
     for (auto it = entities.begin(); it != entities.end(); ++it)
     {
-        Entity* entity = it->second.get();
+        Entity *entity = it->second.get();
 
         if (!include_deleted && entity->is_deleted())
             continue;
@@ -203,7 +201,8 @@ template <typename System, typename... EventTypes>
 void ECSEngine::add_system()
 {
     if (!verify_listener<System, EventTypes...>())
-        throw __lz::LazarusException("System is not a listener to some of the event types");
+        throw __lz::LazarusException(
+            "System is not a listener to some of the event types");
 
     // Put all event types in a vector
     std::vector<std::type_index> types{__lz::get_type_index<EventTypes>()...};
@@ -242,7 +241,7 @@ void ECSEngine::delete_system()
         auto &systems = pair.second;
         for (auto it = systems.begin(); it != systems.end(); ++it)
         {
-            if (dynamic_cast<System*>(it->get()))
+            if (dynamic_cast<System *>(it->get()))
             {
                 systems.erase(it);
                 break;
@@ -252,7 +251,7 @@ void ECSEngine::delete_system()
 }
 
 template <typename EventType>
-void ECSEngine::emit(const EventType& event)
+void ECSEngine::emit(const EventType &event)
 {
     // TODO: Log case in which an event is emitted but no listeners for that type exist
     auto found = subscribers.find(__lz::get_type_index<EventType>());
@@ -261,7 +260,7 @@ void ECSEngine::emit(const EventType& event)
         auto event_listeners = found->second;
         for (auto it = event_listeners.begin(); it != event_listeners.end(); ++it)
         {
-            auto* listener = dynamic_cast<EventListener<EventType>*>(it->get());
+            auto *listener = dynamic_cast<EventListener<EventType> *>(it->get());
             listener->receive(*this, event);
         }
     }
@@ -286,7 +285,7 @@ bool ECSEngine::verify_listener()
     return std::is_base_of<EventListener<EventType>, System>::value;
 }
 
-template <typename System, typename T, typename V,typename... Types>
+template <typename System, typename T, typename V, typename... Types>
 bool ECSEngine::verify_listener()
 {
     return verify_listener<System, T>() && verify_listener<System, V, Types...>();
@@ -322,7 +321,7 @@ bool ECSEngine::is_listener(std::type_index type_id) const
     auto found = subscribers.find(type_id);
     if (found != subscribers.end())
     {
-        // Search for this system in the listeners list 
+        // Search for this system in the listeners list
         auto listeners = found->second;
         for (auto it = listeners.begin(); it != listeners.end(); ++it)
         {

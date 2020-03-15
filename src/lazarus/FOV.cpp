@@ -1,5 +1,6 @@
 #include <lazarus/FOV.h>
 #include <lazarus/common.h>
+
 #include <algorithm>
 #include <cmath>
 
@@ -65,9 +66,7 @@ std::vector<Position2D> lz::cast_ray(const Position2D &origin,
     return points;
 }
 
-bool lz::los(const Position2D &origin,
-             const Position2D &dest,
-             const SquareGridMap &map)
+bool lz::los(const Position2D &origin, const Position2D &dest, const SquareGridMap &map)
 {
     // Cast a ray and check if it got to the destination
     auto ray = cast_ray(origin, dest, &map, true);
@@ -89,8 +88,7 @@ std::set<Position2D> lz::fov(const Position2D &origin,
     }
 }
 
-std::set<Position2D> lz::circle2D(const Position2D &origin,
-                                  const int &radius)
+std::set<Position2D> lz::circle2D(const Position2D &origin, const int &radius)
 {
     // Find circle positions for one octant and replicate to all other
     // octants using a modification of Bresenham's algorithm
@@ -104,10 +102,10 @@ std::set<Position2D> lz::circle2D(const Position2D &origin,
         if (d > 0)
         {
             y--;
-            d += + 4 * (x - y) + 10;
+            d += 4 * (x - y) + 10;
         }
         else
-            d += + 4 * x + 6;
+            d += 4 * x + 6;
         __lz::add_octants(origin, x, y, circle);
     }
     return circle;
@@ -150,12 +148,10 @@ std::set<Position2D> __lz::fov_simple(const Position2D &origin,
             auto ray = cast_ray(origin, pos, &map, max_cast_dist, true);
             // Add the entire line trajectory to visible,
             // except for out of bounds tiles
-            std::copy_if(ray.begin(), ray.end(),
+            std::copy_if(ray.begin(),
+                         ray.end(),
                          std::inserter(visible, visible.begin()),
-                         [&](auto ray_pos)
-                         {
-                             return !map.is_out_of_bounds(ray_pos);
-                         });
+                         [&](auto ray_pos) { return !map.is_out_of_bounds(ray_pos); });
         }
     }
     return visible;

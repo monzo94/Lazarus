@@ -1,5 +1,6 @@
 #include <lazarus/Graphics/Tileset.h>
 #include <lazarus/common.h>
+
 #include <filesystem>
 #include <regex>
 
@@ -71,8 +72,7 @@ void Tileset::load(const std::string &path)
         int col = id % (texture_width / tile_size);
         int row = id / (texture_width / tile_size);
 
-        sf::IntRect sprite_rect(col * tile_size, row * tile_size,
-                                tile_size, tile_size);
+        sf::IntRect sprite_rect(col * tile_size, row * tile_size, tile_size, tile_size);
         tiles.emplace_back(texture, sprite_rect);
     }
 }

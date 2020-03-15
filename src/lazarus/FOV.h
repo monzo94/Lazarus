@@ -1,8 +1,9 @@
 #pragma once
 
-#include <set>
-#include <cmath>
 #include "SquareGridMap.h"
+
+#include <cmath>
+#include <set>
 
 namespace lz
 {
@@ -17,10 +18,10 @@ enum class FOV
 /**
  * Cast a linear ray from the origin to the destination and return
  * the visible positions.
- * 
+ *
  * It uses a modification of Bresenham's algorithm to always calculate
  * the path from origin to destination.
- * 
+ *
  * @param origin Where to cast the ray from.
  * @param dest Destination of the ray.
  * @param map Map that can be specified to check visibility. If no
@@ -42,9 +43,7 @@ std::vector<Position2D> cast_ray(const Position2D &origin,
 /**
  * Return whether origin has LOS of dest in the given map.
  */
-bool los(const Position2D &origin,
-         const Position2D &dest,
-         const SquareGridMap &map);
+bool los(const Position2D &origin, const Position2D &dest, const SquareGridMap &map);
 
 /**
  * Return a vector of the positions that are visible from the origin at a given range
@@ -58,8 +57,7 @@ std::set<Position2D> fov(const Position2D &origin,
 /**
  * Return the positions on the circle at the given radius from the origin.
  */
-std::set<lz::Position2D> circle2D(const lz::Position2D &origin,
-                                  const int &radius);
+std::set<lz::Position2D> circle2D(const lz::Position2D &origin, const int &radius);
 }  // namespace lz
 
 namespace __lz
@@ -74,4 +72,4 @@ void add_octants(const lz::Position2D &origin,
 std::set<lz::Position2D> fov_simple(const lz::Position2D &origin,
                                     const int &range,
                                     const lz::SquareGridMap &map);
-}
+}  // namespace __lz

@@ -1,7 +1,7 @@
-#include "catch/catch.hpp"
-
 #include <lazarus/AStarSearch.h>
 #include <lazarus/SquareGridMap.h>
+
+#include "catch/catch.hpp"
 
 using namespace lz;
 
@@ -14,20 +14,19 @@ TEST_CASE("A* on grid map")
     // ..#..
     // ....#
     std::vector<std::vector<int>> prefab{
-        {1,1,1,0,1},
-        {1,0,1,1,0},
-        {0,0,0,1,0},
-        {1,1,0,1,1},
-        {1,1,1,1,0},
+        {1, 1, 1, 0, 1},
+        {1, 0, 1, 1, 0},
+        {0, 0, 0, 1, 0},
+        {1, 1, 0, 1, 1},
+        {1, 1, 1, 1, 0},
     };
     SquareGridMap map(prefab);
     SquareGridMap map_with_diagonals(prefab, true);
 
     SECTION("A* on grid map without diagonals and equal costs")
     {
-        AStarSearch<Position2D, SquareGridMap> astar_search(map,
-                                                            Position2D(1, 3),
-                                                            Position2D(4, 3));
+        AStarSearch<Position2D, SquareGridMap> astar_search(
+            map, Position2D(1, 3), Position2D(4, 3));
         REQUIRE_NOTHROW(astar_search.execute());
         REQUIRE(astar_search.get_state() == SearchState::SUCCESS);
         auto path = astar_search.getPath();
@@ -40,9 +39,8 @@ TEST_CASE("A* on grid map")
     }
     SECTION("A* on grid map with diagonals and equal costs")
     {
-        AStarSearch<Position2D, SquareGridMap> astar_search(map_with_diagonals,
-                                                            Position2D(1, 3),
-                                                            Position2D(4, 3));
+        AStarSearch<Position2D, SquareGridMap> astar_search(
+            map_with_diagonals, Position2D(1, 3), Position2D(4, 3));
         REQUIRE_NOTHROW(astar_search.execute());
         REQUIRE(astar_search.get_state() == SearchState::SUCCESS);
         auto path = astar_search.getPath();
@@ -52,26 +50,23 @@ TEST_CASE("A* on grid map")
     }
     SECTION("A* with non-existant path")
     {
-        AStarSearch<Position2D, SquareGridMap> astar_search(map,
-                                                            Position2D(4, 0),
-                                                            Position2D(0, 0));
+        AStarSearch<Position2D, SquareGridMap> astar_search(
+            map, Position2D(4, 0), Position2D(0, 0));
         REQUIRE_NOTHROW(astar_search.execute());
         REQUIRE(astar_search.get_state() == SearchState::FAILED);
-        REQUIRE_THROWS_AS(astar_search.getPath(), __lz::LazarusException);        
+        REQUIRE_THROWS_AS(astar_search.getPath(), __lz::LazarusException);
     }
     SECTION("getting path on an unfinished search")
     {
-        AStarSearch<Position2D, SquareGridMap> astar_search(map,
-                                                            Position2D(1, 3),
-                                                            Position2D(4, 3));
+        AStarSearch<Position2D, SquareGridMap> astar_search(
+            map, Position2D(1, 3), Position2D(4, 3));
         REQUIRE(astar_search.get_state() == SearchState::READY);
         REQUIRE_THROWS_AS(astar_search.getPath(), __lz::LazarusException);
     }
     SECTION("re-initialize search")
     {
-        AStarSearch<Position2D, SquareGridMap> astar_search(map,
-                                                            Position2D(1, 3),
-                                                            Position2D(4, 3));
+        AStarSearch<Position2D, SquareGridMap> astar_search(
+            map, Position2D(1, 3), Position2D(4, 3));
         REQUIRE_NOTHROW(astar_search.execute());
         REQUIRE(astar_search.get_state() == SearchState::SUCCESS);
         REQUIRE_NOTHROW(astar_search.init(Position2D(2, 3), Position2D(1, 2)));
@@ -80,9 +75,8 @@ TEST_CASE("A* on grid map")
     }
     SECTION("A* on grid map with varying costs")
     {
-        AStarSearch<Position2D, SquareGridMap> astar_search(map_with_diagonals,
-                                                            Position2D(3, 2),
-                                                            Position2D(2, 4));
+        AStarSearch<Position2D, SquareGridMap> astar_search(
+            map_with_diagonals, Position2D(3, 2), Position2D(2, 4));
         map_with_diagonals.set_cost(3, 3, 10);
         REQUIRE_NOTHROW(astar_search.execute());
         // With cost 1, the shortest path has length 2

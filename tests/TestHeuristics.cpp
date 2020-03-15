@@ -1,6 +1,6 @@
-#include "catch/catch.hpp"
-
 #include <lazarus/Heuristics.h>
+
+#include "catch/catch.hpp"
 
 using namespace Catch::literals;
 
@@ -18,10 +18,13 @@ TEST_CASE("Manhattan distance")
 
 TEST_CASE("Euclidean distance")
 {
-    REQUIRE(euclidean_distance(Position2D(0, 0), Position2D(2, 1)) == Approx(std::sqrt(5)));
-    REQUIRE(euclidean_distance(Position2D(0, 0), Position2D(1, 1)) == Approx(std::sqrt(2)));
+    REQUIRE(euclidean_distance(Position2D(0, 0), Position2D(2, 1)) ==
+            Approx(std::sqrt(5)));
+    REQUIRE(euclidean_distance(Position2D(0, 0), Position2D(1, 1)) ==
+            Approx(std::sqrt(2)));
     REQUIRE(euclidean_distance(Position2D(-1, 2), Position2D(-1, 2)) == 0.0_a);
-    REQUIRE(euclidean_distance(Position2D(2, -5), Position2D(-5, 2)) == Approx(7 * std::sqrt(2)));
+    REQUIRE(euclidean_distance(Position2D(2, -5), Position2D(-5, 2)) ==
+            Approx(7 * std::sqrt(2)));
     REQUIRE(euclidean_distance(Position2D(-1, -1), Position2D(1, -1)) == 2.0_a);
     REQUIRE(euclidean_distance(Position2D(-1, -1), Position2D(-1, 1)) == 2.0_a);
 }
@@ -38,10 +41,12 @@ TEST_CASE("Chebyshev distance")
 
 TEST_CASE("Octile distance")
 {
-    REQUIRE(octile_distance(Position2D(0, 0), Position2D(2, 1)) == Approx(1 + std::sqrt(2)));
+    REQUIRE(octile_distance(Position2D(0, 0), Position2D(2, 1)) ==
+            Approx(1 + std::sqrt(2)));
     REQUIRE(octile_distance(Position2D(0, 0), Position2D(1, 1)) == Approx(std::sqrt(2)));
     REQUIRE(octile_distance(Position2D(-1, 2), Position2D(-1, 2)) == 0.0_a);
-    REQUIRE(octile_distance(Position2D(2, -5), Position2D(-5, 2)) == Approx(7 * std::sqrt(2)));
+    REQUIRE(octile_distance(Position2D(2, -5), Position2D(-5, 2)) ==
+            Approx(7 * std::sqrt(2)));
     REQUIRE(octile_distance(Position2D(-1, -1), Position2D(1, -1)) == 2.0_a);
     REQUIRE(octile_distance(Position2D(-1, -1), Position2D(-1, 1)) == 2.0_a);
 }

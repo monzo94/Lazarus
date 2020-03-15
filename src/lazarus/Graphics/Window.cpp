@@ -13,8 +13,8 @@ Window::Window()
 {
 }
 
-void Window::init(Tileset &tileset_, int width_,
-                  int height_, std::string title, Color bg_color_)
+void Window::init(
+    Tileset &tileset_, int width_, int height_, std::string title, Color bg_color_)
 {
     tileset = &tileset_;
     width = width_;

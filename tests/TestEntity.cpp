@@ -1,7 +1,7 @@
-#include "catch/catch.hpp"
-
 #include <lazarus/ECS/Entity.h>
 #include <lazarus/common.h>
+
+#include "catch/catch.hpp"
 
 using namespace lz;
 
@@ -10,7 +10,8 @@ struct TestComponent
 {
     TestComponent(int num)
         : num(num)
-    {}
+    {
+    }
 
     int num;
 };
@@ -22,7 +23,8 @@ struct SecondTestComponent
         : string(string)
         , num(num)
         , test_bool(test_bool)
-    {}
+    {
+    }
 
     std::string string;
     int num;
@@ -64,11 +66,7 @@ TEST_CASE("adding components")
     }
     SECTION("add one component with multiple params to entity")
     {
-        REQUIRE_NOTHROW(entity.add_component<SecondTestComponent>(
-            "test",
-            14,
-            false
-        ));
+        REQUIRE_NOTHROW(entity.add_component<SecondTestComponent>("test", 14, false));
     }
     SECTION("add an empty component")
     {

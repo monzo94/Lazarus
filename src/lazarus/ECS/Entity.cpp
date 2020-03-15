@@ -9,17 +9,17 @@ Entity::Entity()
 {
 }
 
-bool Entity::operator==(const Entity& other)
+bool Entity::operator==(const Entity &other)
 {
     return get_id() == other.get_id();
 }
 
-bool Entity::operator!=(const Entity& other)
+bool Entity::operator!=(const Entity &other)
 {
     return !(*this == other);
 }
 
-bool Entity::operator<(const Entity& other)
+bool Entity::operator<(const Entity &other)
 {
     return get_id() < other.get_id();
 }

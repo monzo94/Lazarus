@@ -4,18 +4,23 @@
 
 #ifndef NDEBUG
 #include <cstdio>
-#define DEBUG(...) do { printf(__VA_ARGS__); printf("\n"); } while (0)
+#define DEBUG(...)                                                                       \
+    do                                                                                   \
+    {                                                                                    \
+        printf(__VA_ARGS__);                                                             \
+        printf("\n");                                                                    \
+    } while (0)
 #else
 #define DEBUG(...)
 #endif
 
 /**
  * Class for exceptions related to the Lazarus engine.
- * 
+ *
  * Meant only for internal use.
  */
 namespace __lz
-{    
+{
 class LazarusException : public std::exception
 {
 public:
@@ -24,7 +29,7 @@ public:
     {
     }
 
-    virtual const char* what() const throw()
+    virtual const char *what() const throw()
     {
         return msg.c_str();
     }
@@ -32,4 +37,4 @@ public:
 private:
     std::string msg;
 };
-}
+}  // namespace __lz
